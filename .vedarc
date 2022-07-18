@@ -1,0 +1,11 @@
+{
+  "IMPORTED": {
+    "image1": {
+      "PATH": "./1.jpg",
+    },
+  },
+  "vertexMode": "LINES",
+  "pixelRatio": 2,
+  "audio": true,
+  "midi": true,
+}
