@@ -3,7 +3,8 @@ uniform float time;
 uniform vec2 resolution;
 uniform sampler2D spectrum;
 //uniform sampler2D midi;
-#include "tools.frag"
+
+#define sat(a) clamp(a, 0., 1.)
 
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 

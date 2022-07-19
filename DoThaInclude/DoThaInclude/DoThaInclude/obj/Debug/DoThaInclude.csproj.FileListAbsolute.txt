@@ -1,0 +1,7 @@
+C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\bin\Debug\DoThaInclude.exe.config
+C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\bin\Debug\DoThaInclude.exe
+C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\bin\Debug\DoThaInclude.pdb
+C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.csproj.AssemblyReference.cache
+C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.csproj.CoreCompileInputs.cache
+C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.exe
+C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.pdb

@@ -1,0 +1,15 @@
+"*":
+  "atom-shell-commands":
+    commands: [
+      {
+        name: "updateVedaIncludes"
+        command: "{ProjectDir}/DoThaInclude/DoThaInclude/DoThaInclude/bin/Debug/DoThaInclude.exe"
+        arguments: [
+          "{ProjectDir}"
+        ]
+        options:
+          cwd: "{FileDir}"
+          keymap: "ctrl-enter"
+          selector: "atom-workspace atom-text-editor:not([mini])"
+      }
+    ]
