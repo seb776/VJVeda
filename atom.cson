@@ -9,7 +9,7 @@
         ]
         options:
           cwd: "{FileDir}"
-          keymap: "ctrl-enter"
+          keymap: "ctrl-i"
           selector: "atom-workspace atom-text-editor:not([mini])"
       }
     ]
