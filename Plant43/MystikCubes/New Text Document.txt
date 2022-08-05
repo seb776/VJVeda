@@ -1,0 +1,150 @@
+// This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0
+// Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ 
+// or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+// =========================================================================================================
+
+#define FFT(a) texelFetch(iChannel2, ivec2(a,0),0).x
+
+float hash11(float seed)
+{
+    return fract(sin(seed*123.456)*123.456);
+}
+float _seed;
+
+float rand()
+{
+    return hash11(_seed++);
+}
+
+vec3 getCam(vec3 rd, vec2 uv)
+{
+    float fov = 3.;
+    vec3 r = normalize(cross(rd, vec3(0.,1.,0.)));
+    vec3 u = normalize(cross(rd, r));
+    return normalize(rd+fov*(r*uv.x+u*uv.y));
+}
+
+vec2 _min(vec2 a, vec2 b)
+{
+    if (a.x < b.x)
+        return a;
+    return b;
+}
+
+float _cube(vec3 p, vec3 s)
+{
+    vec3 l = abs(p)-s;
+    return max(l.x, max(l.y, l.z));
+}
+
+vec2 map(vec3 p)
+{
+    vec2 acc = vec2(10000.,-1.);
+    
+    //acc = _min(acc, vec2(length(p)-1., 0.));
+    
+    float ground = -p.y;
+    
+    acc = _min(acc, vec2(ground, 0.));
+    
+    p.x += sin(p.y+iTime)*sat(-p.y)*.5;
+    
+    vec2 repc = vec2(.5);
+    vec3 pc = p;
+    vec2 idc = floor((pc.xz+repc*.5)/repc);
+    float h = sin(idc.x+iTime+idc.y)*.5+1.;
+    pc.xz = mod(pc.xz+repc*.5,repc)-repc*.5;
+    float cubes = _cube(pc, vec2(.1,h).xyx);
+    float matid = abs(idc.x)+100.*(abs(idc.y)+1.);
+    cubes = max(cubes, length(p.xz)-3.);
+    acc = _min(acc, vec2(cubes, 10.+matid));
+    
+    return acc;
+}
+
+vec3 getMat(vec3 p, vec3 n, vec3 rd, vec3 res)
+{
+    if (res.z > 9. && abs(dot(n, vec3(0.,1.,0.))) > 0.99)
+    {
+        float idy = floor(res.z /100.);
+        float idx = res.z-(idy*100.);
+        vec3 rgb = texture(iChannel0, vec2(idx, idy)*.1).xyz;
+        rgb.xy *= r2d(.5);
+        rgb.yz *= r2d(2.9);
+        rgb = abs(rgb);
+        float f = FFT(idx*0.1);
+        return rgb*f*5.;
+    }
+    
+    return vec3(0.835,0.824,0.804)*1.4;
+}
+
+vec3 trace(vec3 ro, vec3 rd, int steps)
+{
+    vec3 p = ro;
+    for (int i = 0 ; i < steps && distance(p, ro) < 25.; ++i)
+    {
+        vec2 res = map(p);
+        if (res.x< 0.01)
+            return vec3(res.x, distance(p, ro), res.y);
+        p+=rd*res.x*.35;
+    }
+    return vec3(-1.);
+}
+
+vec3 getNorm(vec3 p, float d)
+{
+    vec2 e = vec2(0.01,0.);
+    return normalize(vec3(d)-vec3(map(p-e.xyy).x, map(p-e.yxy).x, map(p-e.yyx).x));
+}
+
+vec3 rdr(vec2 uv)
+{
+    vec3 col = vec3(0.);
+    float dist = 1.+1.*sin(iTime*.35);
+    float t = iTime*.1;
+    vec3 ro = vec3(sin(t)*dist,-3.-2.*sin(iTime*.15),cos(t)*dist);
+    vec3 ta = vec3(0.,0.,2.*sin(iTime*.1));
+    vec3 rd = normalize(ta-ro);
+    
+    rd = getCam(rd, uv);
+    
+    vec3 res = trace(ro, rd, 128);
+    if (res.y > 0.)
+    {
+        vec3 p = ro+rd*res.y;
+        vec3 n = getNorm(p, res.x);
+        
+        col = n*.5+.5;
+        col = getMat(p, n, rd, res);
+        
+        float ao = 1.;
+        for (int iao = 0; iao < 8; ++iao)
+        {
+            vec3 ray = normalize(vec3(rand(), rand(), rand())-.5);
+            if (dot(ray, vec3(0.,1.,0.)) > 0.1)
+                ray = -ray;
+            vec3 aores = trace(p+n*0.01, ray, 64);
+            if (aores.y > 0.)
+            {
+                ao -= sat(aores.y/.3)/8.;
+            }
+        }
+        col = mix(col, vec3(0.604,0.529,0.475), 1.-ao);
+
+    }
+    
+    return col;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 ouv = fragCoord/iResolution.xy;
+    vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.xx;
+    _seed = texture(iChannel0, uv*10.).x+iTime;
+    vec3 col = rdr(uv);
+    col = pow(col, vec3(2.25))*.9;
+    col = sat(1.-col);
+    col = mix(col, texture(iChannel1, ouv).xyz, .5);
+    fragColor = vec4(col,1.0);
+}

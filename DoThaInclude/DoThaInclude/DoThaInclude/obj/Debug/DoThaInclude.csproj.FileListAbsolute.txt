@@ -5,3 +5,10 @@ C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclud
 C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.csproj.CoreCompileInputs.cache
 C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.exe
 C:\Users\s.maire\Documents\Projects\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.pdb
+C:\Users\z0rg\Documents\Projects\Perso\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\bin\Debug\DoThaInclude.exe.config
+C:\Users\z0rg\Documents\Projects\Perso\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\bin\Debug\DoThaInclude.exe
+C:\Users\z0rg\Documents\Projects\Perso\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\bin\Debug\DoThaInclude.pdb
+C:\Users\z0rg\Documents\Projects\Perso\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.csprojAssemblyReference.cache
+C:\Users\z0rg\Documents\Projects\Perso\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.csproj.CoreCompileInputs.cache
+C:\Users\z0rg\Documents\Projects\Perso\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.exe
+C:\Users\z0rg\Documents\Projects\Perso\VJVeda\DoThaInclude\DoThaInclude\DoThaInclude\obj\Debug\DoThaInclude.pdb
