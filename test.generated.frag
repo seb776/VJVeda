@@ -3,7 +3,11 @@ uniform float time;
 uniform vec2 resolution;
 uniform sampler2D spectrum;
 uniform sampler2D midi;
+// folder h
+// folder_back_in.h
 
+// folder_back_out.h
+// test_local
 #define sat(a) clamp(a, 0., 1.)
 
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x

@@ -3,7 +3,9 @@ uniform float time;
 uniform vec2 resolution;
 uniform sampler2D spectrum;
 uniform sampler2D midi;
-#include "tools.frag"
+#include "tools.glsl"
+#include "diamond_left.h"
+#include "diamond_right.h"
 
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
