@@ -1,11 +1,10 @@
 precision mediump float;
+
 uniform float time;
 uniform vec2 resolution;
 uniform sampler2D spectrum;
 uniform sampler2D midi;
-#include "tools.glsl"
-#include "diamond_left.h"
-#include "diamond_right.h"
+//#include "tools.glsl"
 
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
@@ -21,7 +20,7 @@ void main() {
 
     vec3 col = vec3(0.);
 
-    col = vec3(1.)*pow(FFT(uv.x)*sat(uv.x+.5)*4., 1.);
+    col = vec3(1.)*pow(FFT(uv.x),1.);//*sat(uv.x+.5)*4., 1.);
 //col = vec3(0.);
   //col = vec3(1.)*MIDI_BTN_R(7);
     gl_FragColor = vec4(col, 1.0);

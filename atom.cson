@@ -3,9 +3,10 @@
     commands: [
       {
         name: "updateVedaIncludes"
-        command: "{ProjectDir}/DoThaInclude/DoThaInclude/DoThaInclude/bin/Debug/DoThaInclude.exe"
+        command: "{ProjectDir}/Tools/GLSLIncludes/GLSLIncludes.exe"
         arguments: [
-          "{ProjectDir}"
+          "{FileName}"
+          "-o {fileNameNoExt}.generated{ext}"
         ]
         options:
           cwd: "{FileDir}"
