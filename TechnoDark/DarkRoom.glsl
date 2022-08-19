@@ -47,7 +47,7 @@ vec3 getMatDarkRoom(vec3 rd, vec3 res, vec3 p, vec3 n)
     {
         if (abs(dot(n,vec3(0.,0.,1.))) < 0.01)
         {
-            col = vec3(0.051,0.404,0.408)*.2*pow(texture2D(greyNoise, p.xz*.1).x, .1)*vec3(.5); // ambient
+            col = vec3(0.051,0.404,0.408)*.2*pow(textureRepeat(greyNoise, p.xz*.1).x, .1)*vec3(.5); // ambient
         }
         else
             col = vec3(0.);
@@ -63,9 +63,9 @@ vec3 getMatDarkRoom(vec3 rd, vec3 res, vec3 p, vec3 n)
         float sqr = _sqr(uvwall, vec2(1.4, .78));
         float wincolfactor = sat(sin(idwin*1.+3.*time*sign(p.y))*.5+.5);
         //wincolfactor += pow(FFT(.1),2.);
-        wincolfactor *= (mod(time, .2)/.2)*FFT(.1);
+        //wincolfactor *= (mod(time, .2)/.2)*FFT(.1);
         vec3 rgbwin = mix(vec3(1.), vec3(1.,0.1,0.4), wincolfactor);
-        col = mix(vec3(0.), rgbwin*pow(FFT(.9),.5), 1.-sat(sqr*40.));
+        col = mix(vec3(0.), rgbwin*(pow(FFT(.9),.5)+.5), 1.-sat(sqr*40.));
     }
     if (res.z == 2.)
     {
@@ -77,7 +77,7 @@ vec3 getMatDarkRoom(vec3 rd, vec3 res, vec3 p, vec3 n)
 
 float getWallSpec(vec3 p)
 {
-    return pow(texture2D(greyNoise, p.xz*.1).x, .1);
+    return pow(textureRepeat(greyNoise, p.xz*.1).x, .1);
 }
 
 vec3 rdrDarkRoom(vec2 uv)
@@ -100,7 +100,7 @@ vec3 rdrDarkRoom(vec2 uv)
         {
             if (abs(dot(n,vec3(0.,0.,1.))) < 0.01)
             {
-                float spec = pow(texture2D(greyNoise, p.xz*.1).x, 1.)*.2;
+                float spec = pow(textureRepeat(greyNoise, p.xz*.1).x, 1.)*.2;
                 vec3 refl = normalize(reflect(rd, n)+spec*2.*(vec3(rand(), rand(), rand())-.5));
                 vec3 resrefl = traceDarkRoom(p+n*0.01, refl, 128);
                 if (resrefl.y > 0.)

@@ -51,4 +51,10 @@ vec2 _min(vec2 a, vec2 b)
     return b;
 }
 
+// To replace missing behavior in veda
+vec4 textureRepeat(sampler2D sampler, vec2 uv)
+{
+  return texture2D(sampler, mod(uv, vec2(1.)));
+}
+
 #endif // !TOOLS_INCLUDE

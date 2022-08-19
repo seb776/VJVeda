@@ -4,8 +4,9 @@
       "PATH": "./Textures/GreyNoise.jpg",
     },
   },
+
   "vertexMode": "LINES",
-  "pixelRatio": 2,
+  "pixelRatio": 1,
   "audio": true,
   "midi": true,
 }
