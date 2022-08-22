@@ -7,9 +7,12 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+#define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
+
+
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -18,9 +21,19 @@ uniform sampler2D greyNoise;
 #define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
+#define FFTlow (FFT(0.1) * MIDI_KNOB(0))
+#define FFTmid (FFT(0.5) * MIDI_KNOB(1))
+#define FFThigh (FFT(0.7) * MIDI_KNOB(2))
+#define PI 3.14159265
 float hash11(float seed)
 {
     return fract(sin(seed*123.456)*123.456);
+}
+
+float _cube(vec3 p, vec3 s)
+{
+  vec3 l = abs(p)-s;
+  return max(l.x, max(l.y, l.z));
 }
 
 float _seed;

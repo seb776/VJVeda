@@ -61,7 +61,7 @@ vec3 getMatDarkRoom(vec3 rd, vec3 res, vec3 p, vec3 n)
         uvwall.y -= 1.8;
         uvwall.x = mod(uvwall.x+rep*.5,rep)-rep*.5;
         float sqr = _sqr(uvwall, vec2(1.4, .78));
-        float wincolfactor = sat(sin(idwin*1.+3.*time*sign(p.y))*.5+.5);
+        float wincolfactor = sat(sin(FFTlow*10.+idwin*1.+3.*time*sign(p.y))*.5+.5);
         //wincolfactor += pow(FFT(.1),2.);
         //wincolfactor *= (mod(time, .2)/.2)*FFT(.1);
         vec3 rgbwin = mix(vec3(1.), vec3(1.,0.1,0.4), wincolfactor);
@@ -69,7 +69,7 @@ vec3 getMatDarkRoom(vec3 rd, vec3 res, vec3 p, vec3 n)
     }
     if (res.z == 2.)
     {
-        col = vec3(0.165,0.996,0.678)*10.*FFT(.4);
+        col = vec3(0.165,0.996,0.678)*10.;//*FFT(.4);
     }
 
     return col;
