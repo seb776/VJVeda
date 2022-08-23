@@ -1,28 +1,34 @@
 precision mediump float;
-uniform float time;
-uniform vec2 resolution;
-uniform sampler2D spectrum;
-uniform sampler2D midi;
-//#include "tools.glsl"
-//#include "diamond_left.h"
-//#include "diamond_right.h"
-#define sat(a) clamp(a, 0., 1.)
-#define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
-#define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#include "tools.glsl"
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#include "Visuals/DarkRoom.glsl"
+#include "Visuals/Mackjam.glsl"
+#include "Visuals/TheTunnel.glsl"
+#include "Visuals/TunnelDnB.glsl"
+#include "Visuals/TunnelBars.glsl"
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / resolution.xy;
+    vec2 uv = (gl_FragCoord.xy-.5*resolution.xy) / resolution.xx;
+    _seed = texture2D(greyNoise, gl_FragCoord.xy/resolution.xy).x+time;
 
+    uv +=  (vec2(rand(), rand())-.5)*FFTlow*.2;
     vec3 col = vec3(0.);
 
-    col = vec3(1.)*pow(FFT(uv.x)*sat(uv.x+.5)*4., 1.)*0.;
-//col = vec3(0.);
-  //col = vec3(1.)*MIDI_BTN_R(7);
+    //col = vec3(1.,0.,0.)*pow(FFT(uv.x),1.);
+    if (MIDI_FADER(0) > 0.01)
+      col += MIDI_FADER(0)*rdrDarkRoom(uv)*2.;
+    if (MIDI_FADER(1) > 0.01)
+      col += MIDI_FADER(1)*rdrmack(uv)*2.;
+    if (MIDI_FADER(2) > 0.01)
+      col += MIDI_FADER(2)*rdrtunnel(uv)*2.;
+    if (MIDI_FADER(3) > 0.01)
+      col += MIDI_FADER(3)*rdrtunneldnb(uv)*2.;
+    if (MIDI_FADER(4) > 0.01)
+      col += MIDI_FADER(4)*rdrtunnelbars(uv)*2.;
+    float flicker = 1./16.;
+    col = mix(col, col+vec3(1.,.2,.5)*(1.-sat(length(uv))), MIDI_BTN_S(0)*mod(time, flicker)/flicker);
+
+
     gl_FragColor = vec4(col, 1.0);
 }
