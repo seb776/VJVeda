@@ -633,6 +633,374 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     fragColor = vec4(col,1.0);
 }*/
 
+// Fork of "halu goa" by z0rg. https://shadertoy.com/view/NsdGWH
+// 2021-12-13 21:44:29
+#ifndef TOOLS_INCLUDE
+#define TOOLS_INCLUDE
+
+uniform float time;
+uniform vec2 resolution;
+uniform sampler2D spectrum;
+uniform sampler2D midi;
+
+uniform sampler2D greyNoise;
+#define FFTI(a) time
+
+#define sat(a) clamp(a, 0., 1.)
+#define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
+
+
+
+#define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
+
+#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+
+#define FFTlow (FFT(0.1) * MIDI_KNOB(0))
+#define FFTmid (FFT(0.5) * MIDI_KNOB(1))
+#define FFThigh (FFT(0.7) * MIDI_KNOB(2))
+#define PI 3.14159265
+float hash11(float seed)
+{
+    return fract(sin(seed*123.456)*123.456);
+}
+
+float _cube(vec3 p, vec3 s)
+{
+  vec3 l = abs(p)-s;
+  return max(l.x, max(l.y, l.z));
+}
+
+float _seed;
+
+float rand()
+{
+    _seed++;
+    return hash11(_seed);
+}
+
+mat2 r2d(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+
+vec3 getCam(vec3 rd, vec2 uv)
+{
+    vec3 r = normalize(cross(rd, vec3(0.,1.,0.)));
+    vec3 u = normalize(cross(rd, r));
+    return normalize(rd+r*uv.x+u*uv.y);
+}
+float _sqr(vec2 p, vec2 s)
+{
+    vec2 l = abs(p)-s;
+    return max(l.x, l.y);
+}
+vec2 _min(vec2 a, vec2 b)
+{
+    if (a.x < b.x)
+        return a;
+    return b;
+}
+
+// To replace missing behavior in veda
+vec4 textureRepeat(sampler2D sampler, vec2 uv)
+{
+  return texture2D(sampler, mod(uv, vec2(1.)));
+}
+
+#endif // !TOOLS_INCLUDE
+
+
+
+float _bbox(vec3 p, vec3 s,vec3 t)
+{
+  vec3 l = abs(p)-s;
+  float c = max(l.x,max(l.y,l.z));
+  l = abs(l)-s*t;
+
+  float x = max(max(l.x,c),l.y);
+  float y = max(max(l.z,c),l.y);
+  float z = max(max(l.x,c),l.z);
+  return min(min(x,y),z);
+}
+
+
+float _sph(vec3 p, float r)
+{
+  return length(p)-r;
+}
+
+
+
+vec2 maptunneldnb(vec3 p)
+{
+  vec2 acc = vec2(1000.,-1.);
+  float rep = 2.5;
+  p= mod(p+rep*.5,rep)-rep*.5;
+  //p.xy*=r2d(time+p.z);
+  acc = vec2(_bbox(p,vec3(1.),vec3(.2)),0.);
+
+  return acc;
+}
+
+vec3 tracetunneldnb(vec3 ro, vec3 rd, int steps)
+{
+  vec3 p = ro;
+  for (int i = 0; i<128;++i)
+  {
+    vec2 res = maptunneldnb(p);
+    res.x = min(res.x,.9);
+    if (res.x<0.001)
+      return vec3(res.x,distance(p,ro),res.y);
+    p+= rd*res.x;
+  }
+  return vec3(-1.);
+}
+
+vec3 getCamtunneldnb(vec3 rd, vec2 uv)
+{
+  float fov = 5.;
+  vec3 r = normalize(cross(rd, vec3(0.,1.,0.)));
+  vec3 u = normalize(cross(rd,r));
+  return normalize(rd+fov*(r*uv.x+u*uv.y));
+}
+
+vec3 getNormtunneldnb(vec3 p, float d)
+{
+  vec2 e = vec2(0.001,0.);
+  return normalize(vec3(d)-vec3(maptunneldnb(p-e.xyy).x,maptunneldnb(p-e.yxy).x,maptunneldnb(p-e.yyx).x));
+}
+
+vec3 getMattunneldnb(vec3 res, vec3 rd, vec3 p, vec3 n)
+{
+    vec3 col = n*.5+.5;
+    vec3 rgb = mix(vec3(0.),vec3(1.000,0.180,0.345)*1.,sat((sin((p.x)*20.)-.975)*400.));
+    col = rgb;
+    return col;
+}
+
+vec3 rdrtunneldnb(vec2 uv)
+{
+  vec3 col;
+
+  float z = mod(time,18.);
+  vec3 ro = vec3(0.,0.,-5.+time);
+  vec3 ta = vec3(0.,0.,0.+time);
+  vec3 rd = normalize(ta-ro);
+
+  rd = getCamtunneldnb(rd,uv);
+
+  vec3 res = tracetunneldnb(ro,rd,128);
+  float depth = 15.;
+  if (res.y>0.)
+  {
+    vec3 p = ro+rd*res.y;
+    vec3 n = getNormtunneldnb(p,res.x);
+    col = getMattunneldnb(res, rd, p, n);
+    float spec = .1;
+    vec3 refl = normalize(reflect(rd, n)+spec*(vec3(rand(), rand(), rand())-.5));
+    vec3 resrefl = tracetunneldnb(p+n*0.01,refl, 512);
+    if (resrefl.y > 0.)
+    {
+        vec3 prefl = p+refl*resrefl.y;
+        vec3 nrefl = getNormtunneldnb(prefl, resrefl.x);
+        col += getMattunneldnb(resrefl, refl, prefl, nrefl);
+    }
+    depth = res.y;
+  }
+  vec3 depthCol = 4.*vec3(0.780,0.286,0.200)*
+    (pow(1.-sat(abs(uv.y)),5.)+.1);
+   col = mix(col,depthCol,sat(depth/10.));
+    col *= 1.-sat(length(uv));
+  return col;
+}
+/*
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+  vec2 uv = (fragCoord.xy-vec2(.5)*iResolution.xy) / iResolution.xx;
+  seed=texture(iChannel0,uv).x;
+  seed+=fract(time);
+    uv *= r2d(PI*.5);
+  vec3 col = rdr(uv);
+  col = pow(col, vec3(2.));
+  fragColor = vec4(col, 1.0);
+}*/
+
+// Fork of "tunnelzefzef" by z0rg. https://shadertoy.com/view/stV3zt
+// 2021-12-11 16:08:54
+
+#ifndef TOOLS_INCLUDE
+#define TOOLS_INCLUDE
+
+uniform float time;
+uniform vec2 resolution;
+uniform sampler2D spectrum;
+uniform sampler2D midi;
+
+uniform sampler2D greyNoise;
+#define FFTI(a) time
+
+#define sat(a) clamp(a, 0., 1.)
+#define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
+
+
+
+#define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
+
+#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+
+#define FFTlow (FFT(0.1) * MIDI_KNOB(0))
+#define FFTmid (FFT(0.5) * MIDI_KNOB(1))
+#define FFThigh (FFT(0.7) * MIDI_KNOB(2))
+#define PI 3.14159265
+float hash11(float seed)
+{
+    return fract(sin(seed*123.456)*123.456);
+}
+
+float _cube(vec3 p, vec3 s)
+{
+  vec3 l = abs(p)-s;
+  return max(l.x, max(l.y, l.z));
+}
+
+float _seed;
+
+float rand()
+{
+    _seed++;
+    return hash11(_seed);
+}
+
+mat2 r2d(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+
+vec3 getCam(vec3 rd, vec2 uv)
+{
+    vec3 r = normalize(cross(rd, vec3(0.,1.,0.)));
+    vec3 u = normalize(cross(rd, r));
+    return normalize(rd+r*uv.x+u*uv.y);
+}
+float _sqr(vec2 p, vec2 s)
+{
+    vec2 l = abs(p)-s;
+    return max(l.x, l.y);
+}
+vec2 _min(vec2 a, vec2 b)
+{
+    if (a.x < b.x)
+        return a;
+    return b;
+}
+
+// To replace missing behavior in veda
+vec4 textureRepeat(sampler2D sampler, vec2 uv)
+{
+  return texture2D(sampler, mod(uv, vec2(1.)));
+}
+
+#endif // !TOOLS_INCLUDE
+
+
+vec2 maptunnelbars(vec3 p)
+{
+  vec2 acc = vec2(1000.,-1.);
+
+  vec3 op = p;
+  float rep = 1.;
+//p.z+=time;
+float id = floor((p.z+rep*.5)/rep);
+  p.z = mod(p.z+rep*.5,rep)-rep*.5;
+vec2 sz = vec2(5.+sin(id*.4+time)*.5,.5+.3*sin(time+p.z));
+  //p.xy *=r2d(PI*.25);
+//  id = sin(id)*10.;
+  float shape = max((abs(_sqr(p.xy*r2d(id*1.57),
+    vec2(sz)))-.1),
+     abs(p.z)-.2);
+  acc = _min(acc, vec2(shape, 0.));
+
+
+  return acc;
+}
+
+vec3 getCamtunnelbars(vec3 rd, vec2 uv)
+{
+  float fov = 2.;
+  vec3 r = normalize(cross(rd, vec3(0.,1.,0.)));
+  vec3 u = normalize(cross(rd, r));
+  return normalize(rd+fov*(r*uv.x+u*uv.y));
+}
+
+vec3 getNormtunnelbars(vec3 p, float d)
+{
+  vec2 e = vec2(0.01,.0);
+  return normalize(vec3(d)-vec3(maptunnelbars(p-e.xyy).x,
+    maptunnelbars(p-e.yxy).x,
+    maptunnelbars(p-e.yyx).x));
+}
+vec3 accCol;
+vec3 tracetunnelbars(vec3 ro, vec3 rd, int steps)
+{
+  accCol = vec3(0.);
+  vec3 p = ro;
+  for (int i = 0; i<128;++i)
+{
+    vec2 res = maptunnelbars(p);
+    if (res.x < 0.01)
+      return vec3(res.x,distance(p,ro), res.y);
+      if (distance(p, ro) > 15.)
+        return vec3(-1.);
+    accCol +=vec3(1.,sin(p.z)*.5+.5,.5)
+    *(1.-sat(res.x/.7))*.015;
+    p += rd*res.x*.25;
+  }
+  return vec3(-1.);
+}
+
+vec3 rdrtunnelbars(vec2 uv)
+{
+  vec3 col = vec3(0.);
+
+  float z = time*10.;
+  vec3 ro = vec3(0.,0.,z+-5.);
+  vec3 ta = vec3(0.,0.,z);
+  vec3 rd = normalize(ta-ro);
+  rd = getCamtunnelbars(rd,uv);
+
+  vec3 res = tracetunnelbars(ro, rd, 128);
+  if (res.y >0.)
+  {
+    vec3 p = ro+rd*res.y;
+    vec3 n = getNormtunnelbars(p, res.x);
+    float dt = dot(n, vec3(0.,0.,1));
+    if (abs(dt)<0.1)
+      col = n*.5+.5;
+    else
+      col = vec3(.2);
+  }
+  col+=accCol;
+  col.xy *=r2d(time);
+  col.xy = abs(col.xy);
+col = col.xxx;
+col *= mix(vec3(1.),vec3(1.,.2,.3),
+  1.-sat((abs(uv.x)-.1)*400.));
+  return col;
+}
+
+/*
+void mainImage( out vec4 fragColor, in vec2 fragCoord ){
+  vec2 uv = (fragCoord.xy-.5*iResolution.xy)/
+    iResolution.xx;
+    uv*= 1.-length(uv)*.5;
+  vec3 col = rdr(uv*1.);
+
+
+  col *= 1.-sat((abs(uv.y)-.3)*400.);
+  //for (int i = 0; i<4;++i)
+    //col += rdr(uv*(1.-.5*float(i)/4.))*.1;
+  fragColor = vec4(col, 1.0);
+}*/
+
 
 void main() {
     vec2 uv = (gl_FragCoord.xy-.5*resolution.xy) / resolution.xx;
@@ -645,6 +1013,8 @@ void main() {
     col += MIDI_FADER(0)*rdrDarkRoom(uv)*2.;
     col += MIDI_FADER(1)*rdrmack(uv)*2.;
     col += MIDI_FADER(2)*rdrtunnel(uv)*2.;
+    col += MIDI_FADER(3)*rdrtunneldnb(uv)*2.;
+    col += MIDI_FADER(4)*rdrtunnelbars(uv)*2.;
     float flicker = 1./16.;
     col = mix(col, col+vec3(1.,.2,.5)*(1.-sat(length(uv))), MIDI_BTN_S(0)*mod(time, flicker)/flicker);
 
