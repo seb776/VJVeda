@@ -25,6 +25,7 @@ uniform sampler2D greyNoise;
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
 #define FFThigh (FFT(0.7) * MIDI_KNOB(2))
 #define PI 3.14159265
+#define TAU (PI*2.0)
 float hash11(float seed)
 {
     return fract(sin(seed*123.456)*123.456);
@@ -56,6 +57,10 @@ float _sqr(vec2 p, vec2 s)
 {
     vec2 l = abs(p)-s;
     return max(l.x, l.y);
+}
+float lenny(vec2 v)
+{
+    return abs(v.x)+abs(v.y);
 }
 vec2 _min(vec2 a, vec2 b)
 {
