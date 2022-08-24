@@ -1,6 +1,8 @@
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
 
+precision highp float;
+
 uniform float time;
 uniform vec2 resolution;
 uniform sampler2D spectrum;
