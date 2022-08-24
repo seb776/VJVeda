@@ -36,7 +36,17 @@ float _cube(vec3 p, vec3 s)
   vec3 l = abs(p)-s;
   return max(l.x, max(l.y, l.z));
 }
+float _cucube(vec3 p, vec3 s, vec3 th)
+{
+    vec3 l = abs(p)-s;
+    float cube = max(max(l.x, l.y), l.z);
+    l = abs(l)-th;
+    float x = max(l.y, l.z);
+    float y = max(l.x, l.z);
+    float z = max(l.x, l.y);
 
+    return max(min(min(x, y), z), cube);
+}
 float _seed;
 
 float rand()

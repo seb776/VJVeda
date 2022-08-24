@@ -5,6 +5,9 @@ precision mediump float;
 #include "Visuals/DnBTunnel.glsl"
 #include "Visuals/Glowwyy.glsl"
 #include "Visuals/LSDWormhole.glsl"
+#include "Visuals/Mackjampsy.glsl"
+#include "Visuals/Mackjamtunnel.glsl"
+#include "Visuals/Karenn.glsl"
 
 
 void main() {
@@ -22,12 +25,13 @@ void main() {
       col += MIDI_FADER(1)*rdrglowwyy(uv)*2.;
       if (MIDI_FADER(2) > 0.01)
         col += MIDI_FADER(2)*rdrlsdwormhole(uv)*2.;
-      /*
-    if (MIDI_FADER(3) > 0.01)
-      col += MIDI_FADER(3)*rdrtunneldnb(uv)*2.;
-    if (MIDI_FADER(4) > 0.01)
-      col += MIDI_FADER(4)*rdrtunnelbars(uv)*2.;
-      */
+        if (MIDI_FADER(3) > 0.01)
+          col += MIDI_FADER(3)*rdrmackjampsy(uv)*2.;
+          if (MIDI_FADER(4) > 0.01)
+            col += MIDI_FADER(4)*rdrmackjamtunnel(uv)*2.;
+            if (MIDI_FADER(5) > 0.01)
+              col += MIDI_FADER(5)*rdrkarenn(uv)*2.;
+
     float flicker = 1./16.;
     col = mix(col, col+vec3(1.,.2,.5)*(1.-sat(length(uv))), MIDI_BTN_S(0)*mod(time, flicker)/flicker);
 
