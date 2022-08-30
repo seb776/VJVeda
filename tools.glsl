@@ -15,6 +15,7 @@ uniform sampler2D greyNoise;
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
 #define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
