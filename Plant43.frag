@@ -3,6 +3,10 @@ precision mediump float;
 #include "tools.glsl"
 
 #include "Visuals/BubblesTunnel.glsl"
+#include "Visuals/DnbTriangle.glsl"
+#include "Visuals/FirstDnbVisual.glsl"
+#include "Visuals/JunoPosition.glsl"
+//#include "Visuals/LostStructures.glsl" // Bugged
 
 
 
@@ -16,13 +20,16 @@ void main() {
     //col = vec3(1.,0.,0.)*pow(FFT(uv.x),1.);
     if (MIDI_FADER(0) > 0.01)
       col += MIDI_FADER(0)*rdrbubblestunnel(uv)*2.;
-/*
+
     if (MIDI_FADER(1) > 0.01)
-      col += MIDI_FADER(1)*rdrglowwyy(uv)*2.;
+      col += MIDI_FADER(1)*rdrdnbtriangle(uv)*2.;
+
       if (MIDI_FADER(2) > 0.01)
-        col += MIDI_FADER(2)*rdrlsdwormhole(uv)*2.;
+        col += MIDI_FADER(2)*rdrjunoposition(uv)*2.;
+/*
         if (MIDI_FADER(3) > 0.01)
-          col += MIDI_FADER(3)*rdrmackjampsy(uv)*2.;
+          col += MIDI_FADER(3)*rdrloststructures(uv)*2.;
+
           if (MIDI_FADER(4) > 0.01)
             col += MIDI_FADER(4)*rdrmackjamtunnel(uv)*2.;
             if (MIDI_FADER(5) > 0.01)

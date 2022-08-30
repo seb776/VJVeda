@@ -1,19 +1,5 @@
 #include "../tools.glsl"
 
-float _sub(float a, float b)
-{
-  return max(a,-b);
-}
-float _cir(vec2 uv, float sz)
-{
-  return length(uv)-sz;
-}
-
-float _loz(vec2 uv,float sz)
-{
-  return lenny(uv)-sz;
-}
-
 vec3 lookat(vec2 uv, vec3 dir)
 {
   float fov = 1.;
@@ -162,7 +148,7 @@ vec3 rdrbubblestunnel(vec2 uv)
 uv*= 1.2; //vertical
   vec3 col = rdrScnbubblestunnel(uv);
     //  float diff = pow(fwidth(col.z), .6);
-
+    if (false)
     { // Not so cheap antialiasing SSAA x4
 
         vec2 off = vec2(1., -1.)/(resolution.x*2.);

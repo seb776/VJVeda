@@ -65,14 +65,24 @@ vec3 getCam(vec3 rd, vec2 uv)
     vec3 u = normalize(cross(rd, r));
     return normalize(rd+r*uv.x+u*uv.y);
 }
+
+float lenny(vec2 v)
+{
+    return abs(v.x)+abs(v.y);
+}
 float _sqr(vec2 p, vec2 s)
 {
     vec2 l = abs(p)-s;
     return max(l.x, l.y);
 }
-float lenny(vec2 v)
+float _cir(vec2 uv, float sz)
 {
-    return abs(v.x)+abs(v.y);
+  return length(uv)-sz;
+}
+
+float _loz(vec2 uv,float sz)
+{
+  return lenny(uv)-sz;
 }
 vec2 _min(vec2 a, vec2 b)
 {
