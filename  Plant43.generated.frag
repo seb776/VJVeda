@@ -17,6 +17,7 @@ uniform sampler2D greyNoise;
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
 #define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -100,6 +101,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 #ifndef TOOLS_INCLUDE
@@ -119,6 +121,7 @@ uniform sampler2D greyNoise;
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
 #define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -202,6 +205,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 vec3 lookat(vec2 uv, vec3 dir)
@@ -398,6 +402,7 @@ uv*= 1.2; //vertical
   fragColor = vec4(col, 1.0);
 }*/
 
+
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
 
@@ -415,6 +420,7 @@ uniform sampler2D greyNoise;
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
 #define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -498,6 +504,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 
@@ -645,6 +652,7 @@ col = pow(col, vec3(2.));
 */
 
 
+
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
 
@@ -662,6 +670,7 @@ uniform sampler2D greyNoise;
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
 #define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -745,6 +754,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 float _sdSph(vec3 uv)
@@ -886,6 +896,7 @@ uv*= 3.2+smoothstep(0., .439, mod(time,.4389))*.1; //vertical
 }
 */
 
+
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
 
@@ -903,6 +914,7 @@ uniform sampler2D greyNoise;
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
 #define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -988,6 +1000,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 #endif // !TOOLS_INCLUDE
 
 
+
 float _trijunoposition(vec2 p, float r)
 {
     float a = atan(p.y, p.x);
@@ -1052,6 +1065,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
     fragColor = vec4(col/2.,1.0);
 }*/
+
 
 //#include "Visuals/LostStructures.glsl" // Bugged
 
