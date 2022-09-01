@@ -91,6 +91,12 @@ vec2 _min(vec2 a, vec2 b)
         return a;
     return b;
 }
+vec2 _max(vec2 a, vec2 b)
+{
+  if (a.x > b.x)
+      return a;
+  return b;
+}
 
 // To replace missing behavior in veda
 vec4 textureRepeat(sampler2D sampler, vec2 uv)
