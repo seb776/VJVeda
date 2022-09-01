@@ -22,6 +22,7 @@ vec2 maploststructures(vec3 p)
 
     return acc;
 }
+
 vec3 gradloststructures(float f)
 {
     vec3 cols[4];
@@ -30,12 +31,16 @@ vec3 gradloststructures(float f)
     cols[2] = vec3(1.);
     cols[3] = vec3(1.0);
 
-
     f = pow(sat(sin(f*3.-time*1.5)*.5+.5), 2.)*3.0;
-    vec3 prev = cols[int(f)];
-    vec3 next = cols[int(min(f+1.,3.))];
+    // cols[int(f)] // Non-const array indexing is not permitted in GLES
+    int fi = int(f);
+    #define COL_ACCESS(i) (cols[0] * float(fi == 0) + cols[1] * float(fi == 1) + cols[2] * float(fi == 2) + cols[3] * float(fi == 3))
+    vec3 prev = COL_ACCESS(fi);
+
+    vec3 next = COL_ACCESS(int(min(f+1.,3.)));
     return mix(prev, next, fract(f))*1.2;
 }
+
 vec3 getColloststructures(float id)
 {
     return gradloststructures(id/15.);
@@ -65,6 +70,7 @@ vec3 rdrloststructures(vec2 uv)
     vec3 rd = normalize(ta-ro);
     rd = getCamloststructures(rd, uv);
     vec3 col = textureRepeat(greyNoise, (rd*vec3(1.,1.,1.)).xy).xxx*.25*vec3(0.400,0.643,0.961);
+
     vec3 res = traceloststructures(ro, rd, 48);
     if (res.y > 0.)
     {
@@ -73,6 +79,7 @@ vec3 rdrloststructures(vec2 uv)
         col = getColloststructures(res.z);
     }
     col += accColloststructures;
+    
     return col;
 }
 /*

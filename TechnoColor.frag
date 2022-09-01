@@ -8,6 +8,7 @@ precision mediump float;
 #include "Visuals/Mackjampsy.glsl"
 #include "Visuals/Mackjamtunnel.glsl"
 #include "Visuals/Karenn.glsl"
+#include "Visuals/TunnelPsy.glsl"
 
 
 void main() {
@@ -31,7 +32,8 @@ void main() {
             col += MIDI_FADER(4)*rdrmackjamtunnel(uv)*2.;
             if (MIDI_FADER(5) > 0.01)
               col += MIDI_FADER(5)*rdrkarenn(uv)*2.;
-
+              if (MIDI_FADER(6) > 0.01)
+                col += MIDI_FADER(6)*rdrtunnelpsy(uv)*2.;
     float flicker = 1./16.;
     col = mix(col, col+vec3(1.,.2,.5)*(1.-sat(length(uv))), MIDI_BTN_S(0)*mod(time, flicker)/flicker);
 

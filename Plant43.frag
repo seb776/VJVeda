@@ -6,7 +6,7 @@ precision mediump float;
 #include "Visuals/DnbTriangle.glsl"
 #include "Visuals/FirstDnbVisual.glsl"
 #include "Visuals/JunoPosition.glsl"
-//#include "Visuals/LostStructures.glsl" // Bugged
+#include "Visuals/LostStructures.glsl" // Bugged
 
 
 
@@ -26,10 +26,10 @@ void main() {
 
       if (MIDI_FADER(2) > 0.01)
         col += MIDI_FADER(2)*rdrjunoposition(uv)*2.;
-/*
+
         if (MIDI_FADER(3) > 0.01)
           col += MIDI_FADER(3)*rdrloststructures(uv)*2.;
-
+/*
           if (MIDI_FADER(4) > 0.01)
             col += MIDI_FADER(4)*rdrmackjamtunnel(uv)*2.;
             if (MIDI_FADER(5) > 0.01)
