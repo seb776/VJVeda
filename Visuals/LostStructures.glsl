@@ -34,7 +34,7 @@ vec3 gradloststructures(float f)
     f = pow(sat(sin(f*3.-time*1.5)*.5+.5), 2.)*3.0;
     // cols[int(f)] // Non-const array indexing is not permitted in GLES
     int fi = int(f);
-    #define COL_ACCESS(i) (cols[0] * float(fi == 0) + cols[1] * float(fi == 1) + cols[2] * float(fi == 2) + cols[3] * float(fi == 3))
+    #define COL_ACCESS(A) (cols[0] * float(A == 0) + cols[1] * float(A == 1) + cols[2] * float(A == 2) + cols[3] * float(A == 3))
     vec3 prev = COL_ACCESS(fi);
 
     vec3 next = COL_ACCESS(int(min(f+1.,3.)));
@@ -79,7 +79,7 @@ vec3 rdrloststructures(vec2 uv)
         col = getColloststructures(res.z);
     }
     col += accColloststructures;
-    
+
     return col;
 }
 /*
