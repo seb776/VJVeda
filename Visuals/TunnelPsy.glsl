@@ -1,11 +1,5 @@
 #include "../tools.glsl"
 
-vec2 _max(vec2 a, vec2 b)
-{
-    if (a.x > b.x)
-        return a;
-    return b;
-}
 
 vec2 maptunnelpsy(vec3 p)
 {

@@ -124,7 +124,7 @@ vec3 rdrmackjamtunnel(vec2 uv)
     //col *= vec3(199, 242, 58)/255.;
     float beat = 1./8.;
     col += (mod(time, beat)/beat)*sat(FFT(.1)*col)*45.;
-    col = mix(col, textureRepeat(greyNoise, uv).xyz, .5);
+    //col = mix(col, textureRepeat(greyNoise, uv).xyz, .5);
     col.xy *= r2d(time*.5);
     col = abs(col);
     return col;

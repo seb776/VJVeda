@@ -87,6 +87,8 @@ vec3 tracednbtunnel(vec3 ro, vec3 rd, int steps)
             accCol0 += vec3(sin(p.z)*.5+.5, .2, cos(p.z*3.+p.y*5.+_time*7.)*.2+.5)*(1.-sat(res.x/.3))*.2;
         if (res.y == 1.)
             accCol1 +=  vec3(0.200,0.643,0.980)*(1.-sat(res.x/.05))*.1;
+            if (distance(p, ro) > 60.)
+            break;
         p+= rd*res.x*.75;
     }
     return vec3(-1.);
