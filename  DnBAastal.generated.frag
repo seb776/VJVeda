@@ -1,4 +1,5 @@
 precision mediump float;
+uniform sampler2D backbuffer;
 
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
@@ -298,7 +299,7 @@ vec3 tracednbtunnel(vec3 ro, vec3 rd, int steps)
     accCol0 = vec3(0.);
     accCol1 = vec3(0.);
     vec3 p = ro;
-    for (int i = 0; i < 256; ++i)
+    for (int i = 0; i < 128; ++i)
     {
         vec2 res = mapdnbtunnel(p);
         if (res.x < 0.01)
@@ -309,7 +310,7 @@ vec3 tracednbtunnel(vec3 ro, vec3 rd, int steps)
             accCol1 +=  vec3(0.200,0.643,0.980)*(1.-sat(res.x/.05))*.1;
             if (distance(p, ro) > 60.)
             break;
-        p+= rd*res.x*.75;
+        p+= rd*res.x*.9;
     }
     return vec3(-1.);
 }
@@ -1525,7 +1526,7 @@ vec3 getNormDarkRoom(vec3 p, float d)
 vec3 traceDarkRoom(vec3 ro, vec3 rd,  int steps)
 {
     vec3 p = ro;
-    for (int i = 0; i < 256; ++i)
+    for (int i = 0; i < 128; ++i)
     {
         vec2 res = mapDarkRoom(p);
         if (res.x < 0.01)
@@ -1582,7 +1583,7 @@ vec3 rdrDarkRoom(vec2 uv)
     vec3 col = vec3(0.);
 
     vec3 ro = vec3(-2.+sin(time*.2),1.+sin(time*.25),-8.);
-    vec3 ta = vec3(-2.+sin(time*.2),0.+sin(time*.3),0.);
+    vec3 ta = vec3(-2.+sin(time*.2),0.+sin(time*.3)*.5,0.);
     vec3 rd = normalize(ta-ro);
     rd = getCam(rd, uv);
 
@@ -2587,39 +2588,58 @@ uv*= 1.2; //vertical
 
 
 
+vec3 rdrcomposite(vec2 uv)
+{
+  uv += (vec2(hash11(FFT(0.1)), hash11(FFT(0.2)))-.5)*MIDI_KNOB(0);
+  vec3 col = vec3(0.);
+
+  //col = vec3(1.,0.,0.)*pow(FFT(uv.x),1.);
+  if (MIDI_FADER(0) > 0.01)
+    col += MIDI_FADER(0)*rdrdnbtunnel(uv).zxy*2.;
+
+  if (MIDI_FADER(1) > 0.01)
+    col += MIDI_FADER(1)*rdrdnbcorridor(uv)*2.;
+
+    if (MIDI_FADER(2) > 0.01)
+      col += MIDI_FADER(2)*rdrDarkRoom(uv)*3.;
+/*
+      if (MIDI_FADER(3) > 0.01)
+        col += MIDI_FADER(3)*rdrmackjampsy(uv)*2.;
+        if (MIDI_FADER(4) > 0.01)
+          col += MIDI_FADER(4)*rdrtunnelbars(uv)*2.;
+          if (MIDI_FADER(5) > 0.01)
+            col += MIDI_FADER(5)*rdrtunneldnb(uv)*2.;
+
+            if (MIDI_FADER(6) > 0.01)
+              col += MIDI_FADER(6)*rdrmack(uv)*2.;
+              if (MIDI_FADER(7) > 0.01)
+                col += MIDI_FADER(7)*rdrbubblestunnel(uv)*2.;*/
+  float flicker = 1./16.;
+  col = mix(col, col+vec3(1.,.2,.5)*(1.-sat(length(uv))), MIDI_BTN_S(0)*mod(time, flicker)/flicker);
+  col = mix(col, col.zxy, MIDI_BTN_M(0)*mod(time, flicker)/flicker);
+  col = mix(col, 1.-col.zxy, MIDI_BTN_R(0)*mod(time, flicker)/flicker);
+//col =mix(col, col.xxx, sat(MIDI_KNOB(7)*2.));
+return col;
+}
 
 void main() {
     vec2 uv = (gl_FragCoord.xy-.5*resolution.xy) / resolution.xx;
     _seed = texture2D(greyNoise, gl_FragCoord.xy/resolution.xy).x+time;
 
-    uv +=  (vec2(rand(), rand())-.5)*FFTlow*.2;
+    //uv +=  (vec2(rand(), rand())-.5)*FFTlow*.2;
+    float stp = .02;
+    vec2 off = vec2(.02)*hash11(floor(uv.y/stp+FFT(0.1)*2.)*stp)*pow(FFT(0.5),.5)*15.*MIDI_KNOB(1);
     vec3 col = vec3(0.);
+    if (length(off) < 0.01)
+    {
+      col = rdrcomposite(uv);
+    }
+    else
+    {
+      col.x = rdrcomposite(uv+off).x;
+      col.y = rdrcomposite(uv).y;
+      col.z = rdrcomposite(uv-off).z;
+    }
 
-    //col = vec3(1.,0.,0.)*pow(FFT(uv.x),1.);
-    if (MIDI_FADER(0) > 0.01)
-      col += MIDI_FADER(0)*rdrdnbtunnel(uv)*2.;
-
-    if (MIDI_FADER(1) > 0.01)
-      col += MIDI_FADER(1)*rdrdnbcorridor(uv)*2.;
-
-      if (MIDI_FADER(2) > 0.01)
-        col += MIDI_FADER(2)*rdrDarkRoom(uv)*2.;
-
-        if (MIDI_FADER(3) > 0.01)
-          col += MIDI_FADER(3)*rdrmackjampsy(uv)*2.;
-          if (MIDI_FADER(4) > 0.01)
-            col += MIDI_FADER(4)*rdrtunnelbars(uv)*2.;
-            if (MIDI_FADER(5) > 0.01)
-              col += MIDI_FADER(5)*rdrtunneldnb(uv)*2.;
-
-              if (MIDI_FADER(6) > 0.01)
-                col += MIDI_FADER(6)*rdrmack(uv)*2.;
-                if (MIDI_FADER(7) > 0.01)
-                  col += MIDI_FADER(7)*rdrbubblestunnel(uv)*2.;
-    float flicker = 1./16.;
-    col = mix(col, col+vec3(1.,.2,.5)*(1.-sat(length(uv))), MIDI_BTN_S(0)*mod(time, flicker)/flicker);
-
-col =mix(col, col.xxx, sat(MIDI_KNOB(7)*2.));
     gl_FragColor = vec4(col, 1.0);
 }
-

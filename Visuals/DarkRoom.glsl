@@ -28,7 +28,7 @@ vec3 getNormDarkRoom(vec3 p, float d)
 vec3 traceDarkRoom(vec3 ro, vec3 rd,  int steps)
 {
     vec3 p = ro;
-    for (int i = 0; i < 256; ++i)
+    for (int i = 0; i < 128; ++i)
     {
         vec2 res = mapDarkRoom(p);
         if (res.x < 0.01)
@@ -85,7 +85,7 @@ vec3 rdrDarkRoom(vec2 uv)
     vec3 col = vec3(0.);
 
     vec3 ro = vec3(-2.+sin(time*.2),1.+sin(time*.25),-8.);
-    vec3 ta = vec3(-2.+sin(time*.2),0.+sin(time*.3),0.);
+    vec3 ta = vec3(-2.+sin(time*.2),0.+sin(time*.3)*.5,0.);
     vec3 rd = normalize(ta-ro);
     rd = getCam(rd, uv);
 

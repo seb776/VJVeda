@@ -6,7 +6,7 @@
   },
 
   "vertexMode": "LINES",
-  "pixelRatio": 1,
+  "pixelRatio": 1.5,
   "audio": true,
   "midi": true,
 }
