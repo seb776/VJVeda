@@ -9,10 +9,10 @@ vec2 maptunnelbars(vec3 p)
 
   vec3 op = p;
   float rep = 1.;
-//p.z+=time;
+//p.z+=mtime;
 float id = floor((p.z+rep*.5)/rep);
   p.z = mod(p.z+rep*.5,rep)-rep*.5;
-vec2 sz = vec2(5.+sin(id*.4+time)*.5,.5+.3*sin(time+p.z));
+vec2 sz = vec2(5.+sin(id*.4+mtime)*.5,.5+.3*sin(mtime+p.z));
   //p.xy *=r2d(PI*.25);
 //  id = sin(id)*10.;
   float shape = max((abs(_sqr(p.xy*r2d(id*1.57),
@@ -62,7 +62,7 @@ vec3 rdrtunnelbars(vec2 uv)
 {
   vec3 col = vec3(0.);
 
-  float z = time*10.;
+  float z = mtime*10.;
   vec3 ro = vec3(0.,0.,z+-5.);
   vec3 ta = vec3(0.,0.,z);
   vec3 rd = normalize(ta-ro);
@@ -80,7 +80,7 @@ vec3 rdrtunnelbars(vec2 uv)
       col = vec3(.2);
   }
   col+=accCol;
-  col.xy *=r2d(time);
+  col.xy *=r2d(mtime);
   col.xy = abs(col.xy);
 col = col.xxx;
 col *= mix(vec3(1.),vec3(1.,.2,.3),

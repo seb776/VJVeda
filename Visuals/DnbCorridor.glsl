@@ -133,7 +133,7 @@ vec3 rdr2dnbcorridor(vec2 uv)
 
 vec3 rdrdnbcorridor(vec2 uv)
 {
-  _timednbcorridor = time;
+  _timednbcorridor = mtime;
 
       vec3 col = rdr2dnbcorridor(uv);
       col *= mix(vec3(0.5), vec3(1.), 1.-sat(lenny(uv*1.5)));

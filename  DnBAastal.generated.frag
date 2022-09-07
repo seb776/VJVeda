@@ -12,6 +12,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -23,9 +26,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -122,6 +125,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -133,9 +139,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -317,7 +323,7 @@ vec3 tracednbtunnel(vec3 ro, vec3 rd, int steps)
 
 vec3 rdrdnbtunnel(vec2 uv)
 {
-      _time = time+textureRepeat(greyNoise, uv).x*.5*(1.-sat(length(uv*3.)));
+      _time = mtime+textureRepeat(greyNoise, uv).x*.5*(1.-sat(length(uv*3.)));
     vec3 col = mix(vec3(1.000,0.439,0.302)*2.2, vec3(0.075,0.027,0.110), sat(length(uv*2.5)));
 
     vec3 ro = vec3(0., 0.,-5.);
@@ -365,6 +371,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -376,9 +385,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -472,9 +481,9 @@ vec2 mapmackjampsy(vec3 p)
   acc = _min(acc, vec2(length(p+vec3(0.,0.,-15.))-1., 0.));
 
   p.xz *= r2d(.5*sin(.1*p.y));
-  p.xz += vec2(sin(time), cos(time*75.1+p.y*.1))*1.;
+  p.xz += vec2(sin(mtime), cos(mtime*75.1+p.y*.1))*1.;
   float rad = 20.;
-  vec3 pdart = p+vec3(0.,FFTI(.05)*20.+time*85.,0.);
+  vec3 pdart = p+vec3(0.,FFTI(.05)*20.+mtime*85.,0.);
   float adart = atan(pdart.z, pdart.x);
   float stpdart = PI*2./20.;
   float sector = mod(adart+stpdart*.5,stpdart)-stpdart*.5;
@@ -505,8 +514,8 @@ vec2 mapmackjampsy(vec3 p)
   acc = _min(acc, vec2(tunnel, 0.));
 
   vec3 pcc = op-vec3(0.,55.,0.);
-  pcc.xz *= r2d(time);
-  pcc.yz *= r2d(.5*time);
+  pcc.xz *= r2d(mtime);
+  pcc.yz *= r2d(.5*mtime);
   acc = _min(acc, vec2(_cucube(pcc-vec3(0.,15.,0.), vec3(1.), vec3(.01)), -5.));
 
   return acc;
@@ -528,7 +537,7 @@ vec3 tracemackjampsy(vec3 ro, vec3 rd, int steps)
     if (res.x < 0.01)
       return vec3(res.x, distance(p, ro), res.y);
     if (res.y < 0.)
-      accLightPsy += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+time)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2;
+      accLightPsy += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+mtime)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2;
 
     p+=rd*res.x*.5;
   }
@@ -564,10 +573,10 @@ vec3 rdrmackjampsy2(vec2 uv)
 
 vec3 rdrmackjampsy(vec2 uv)
 {
-  uv *= r2d(-time*.5);
+  uv *= r2d(-mtime*.5);
   uv = abs(uv);
   uv -= vec2(.2+uv.y, 0.);
-  uv *= r2d(.1*time);
+  uv *= r2d(.1*mtime);
   //uv = abs(uv);
  float stp = .1*length(uv);
   uv = floor(uv/stp)*stp;
@@ -583,9 +592,9 @@ vec3 rdrmackjampsy(vec2 uv)
   col = pow(col, vec3(1.45));
   //col *= vec3(199, 242, 58)/255.;
   float beat = 1./8.;
-  col += (mod(time, beat)/beat)*sat(FFT(.1)*col)*45.;
+  col += (mod(mtime, beat)/beat)*sat(FFT(.1)*col)*45.;
   col = mix(col, textureRepeat(greyNoise, uv).xyz, .5);
-  col.xy *= r2d(time);
+  col.xy *= r2d(mtime);
   col = abs(col);
   return col;
 }
@@ -594,10 +603,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	vec2 uv = (fragCoord.xy-.5*iResolution.xy)/iResolution.xx;
 
-  uv *= r2d(-time*.5);
+  uv *= r2d(-mtime*.5);
   uv = abs(uv);
   uv -= vec2(.2+uv.y, 0.);
-  uv *= r2d(.1*time);
+  uv *= r2d(.1*mtime);
   //uv = abs(uv);
  float stp = .1*length(uv);
   uv = floor(uv/stp)*stp;
@@ -613,9 +622,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
   col = pow(col, vec3(1.45));
   //col *= vec3(199, 242, 58)/255.;
   float beat = 1./8.;
-  col += (mod(time, beat)/beat)*sat(FFT(.1)*col)*45.;
+  col += (mod(mtime, beat)/beat)*sat(FFT(.1)*col)*45.;
   col = mix(col, texture(iChannel0, fragCoord.xy/iResolution.xy).xyz, .5);
-  col.xy *= r2d(time);
+  col.xy *= r2d(mtime);
   col = abs(col);
 	fragColor = vec4(col, 1.);
 }
@@ -633,6 +642,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -644,9 +656,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -741,9 +753,9 @@ vec2 mapmackjamtunnel(vec3 p)
   acc = _min(acc, vec2(length(p+vec3(0.,0.,-15.))-1., 0.));
 
   p.xz *= r2d(.5*sin(.1*p.y));
-  p.xz += vec2(sin(time), cos(time*5.1+p.y*.1))*1.;
+  p.xz += vec2(sin(mtime), cos(mtime*5.1+p.y*.1))*1.;
   float rad = 20.;
-  vec3 pdart = p+vec3(0.,FFTI(.05)*20.+time*85.,0.);
+  vec3 pdart = p+vec3(0.,FFTI(.05)*20.+mtime*85.,0.);
   float adart = atan(pdart.z, pdart.x);
   float stpdart = PI*2./10.;
   float sector = mod(adart+stpdart*.5,stpdart)-stpdart*.5;
@@ -774,8 +786,8 @@ vec2 mapmackjamtunnel(vec3 p)
   acc = _min(acc, vec2(tunnel, 0.));
 
   vec3 pcc = op-vec3(0.,55.,0.);
-  pcc.xz *= r2d(time);
-  pcc.yz *= r2d(.5*time);
+  pcc.xz *= r2d(mtime);
+  pcc.yz *= r2d(.5*mtime);
   acc = _min(acc, vec2(_cucube(pcc-vec3(0.,15.,0.), vec3(1.), vec3(.01)), -5.));
 
   return acc;
@@ -799,7 +811,7 @@ vec3 tracemackjamtunnel(vec3 ro, vec3 rd, int steps)
     if (res.x < 0.01)
       return vec3(res.x, distance(p, ro), res.y);
     if (res.y < 0.)
-      accLightmackjamtunnel += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+time)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2*sat(sin(p.y*.05+5.*time));
+      accLightmackjamtunnel += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+mtime)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2*sat(sin(p.y*.05+5.*mtime));
 
     p+=rd*res.x*.5;
   }
@@ -812,7 +824,7 @@ vec3 rdrmackjamtunnel2(vec2 uv)
   vec3 col = background;
 
   vec3 ro = vec3(0.,-5.,-5.);
-  vec3 ta = vec3(sin(time)*5.,85.,0.);
+  vec3 ta = vec3(sin(mtime)*5.,85.,0.);
   vec3 rd = normalize(ta-ro);
 
   rd = getCam(rd, uv);
@@ -836,10 +848,10 @@ vec3 rdrmackjamtunnel2(vec2 uv)
 vec3 rdrmackjamtunnel(vec2 uv)
 {
 
-    //uv *= r2d(-time*.5);
+    //uv *= r2d(-mtime*.5);
     //uv = abs(uv);
     //uv -= vec2(.2+uv.y, 0.);
-    //uv *= r2d(.1*time);
+    //uv *= r2d(.1*mtime);
     //uv = abs(uv);
    float stp = .01*length(uv);
     //uv = floor(uv/stp)*stp;
@@ -855,9 +867,9 @@ vec3 rdrmackjamtunnel(vec2 uv)
     col = pow(col, vec3(1.45));
     //col *= vec3(199, 242, 58)/255.;
     float beat = 1./8.;
-    col += (mod(time, beat)/beat)*sat(FFT(.1)*col)*45.;
+    col += (mod(mtime, beat)/beat)*sat(FFT(.1)*col)*45.;
     //col = mix(col, textureRepeat(greyNoise, uv).xyz, .5);
-    col.xy *= r2d(time*.5);
+    col.xy *= r2d(mtime*.5);
     col = abs(col);
     return col;
 }
@@ -866,10 +878,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	vec2 uv = (fragCoord.xy-.5*iResolution.xy)/iResolution.xx;
 
-  //uv *= r2d(-time*.5);
+  //uv *= r2d(-mtime*.5);
   //uv = abs(uv);
   //uv -= vec2(.2+uv.y, 0.);
-  //uv *= r2d(.1*time);
+  //uv *= r2d(.1*mtime);
   //uv = abs(uv);
  float stp = .01*length(uv);
   //uv = floor(uv/stp)*stp;
@@ -885,9 +897,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
   col = pow(col, vec3(1.45));
   //col *= vec3(199, 242, 58)/255.;
   float beat = 1./8.;
-  col += (mod(time, beat)/beat)*sat(FFTS(.1)*col)*45.;
+  col += (mod(mtime, beat)/beat)*sat(FFTS(.1)*col)*45.;
   col = mix(col, texture(iChannel0, gl_FragCoord.xy/iResolution.xy).xyz, .5);
-  col.xy *= r2d(time*.5);
+  col.xy *= r2d(mtime*.5);
   col = abs(col);
 	fragColor = vec4(col, 1.);
 }
@@ -895,8 +907,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 
 
-// DOne based on Karenn - Crush the mushroom song
-
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
 
@@ -908,6 +918,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -919,220 +932,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
-
-#define FFTlow (FFT(0.1) * MIDI_KNOB(0))
-#define FFTmid (FFT(0.5) * MIDI_KNOB(1))
-#define FFThigh (FFT(0.7) * MIDI_KNOB(2))
-#define PI 3.14159265
-#define TAU (PI*2.0)
-float hash11(float seed)
-{
-    return fract(sin(seed*123.456)*123.456);
-}
-
-float _cube(vec3 p, vec3 s)
-{
-  vec3 l = abs(p)-s;
-  return max(l.x, max(l.y, l.z));
-}
-float _cucube(vec3 p, vec3 s, vec3 th)
-{
-    vec3 l = abs(p)-s;
-    float cube = max(max(l.x, l.y), l.z);
-    l = abs(l)-th;
-    float x = max(l.y, l.z);
-    float y = max(l.x, l.z);
-    float z = max(l.x, l.y);
-
-    return max(min(min(x, y), z), cube);
-}
-float _seed;
-
-float rand()
-{
-    _seed++;
-    return hash11(_seed);
-}
-
-mat2 r2d(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
-
-vec3 getCam(vec3 rd, vec2 uv)
-{
-    vec3 r = normalize(cross(rd, vec3(0.,1.,0.)));
-    vec3 u = normalize(cross(rd, r));
-    return normalize(rd+r*uv.x+u*uv.y);
-}
-
-float lenny(vec2 v)
-{
-    return abs(v.x)+abs(v.y);
-}
-float _sqr(vec2 p, vec2 s)
-{
-    vec2 l = abs(p)-s;
-    return max(l.x, l.y);
-}
-float _cir(vec2 uv, float sz)
-{
-  return length(uv)-sz;
-}
-
-float _loz(vec2 uv,float sz)
-{
-  return lenny(uv)-sz;
-}
-vec2 _min(vec2 a, vec2 b)
-{
-    if (a.x < b.x)
-        return a;
-    return b;
-}
-vec2 _max(vec2 a, vec2 b)
-{
-  if (a.x > b.x)
-      return a;
-  return b;
-}
-
-// To replace missing behavior in veda
-vec4 textureRepeat(sampler2D sampler, vec2 uv)
-{
-  return texture2D(sampler, mod(uv, vec2(1.)));
-}
-
-#endif // !TOOLS_INCLUDE
-
-
-
-vec2 mapkarenn(vec3 p)
-{
-    vec2 acc = vec2(1000., -1.);
-
-    float repa = 2.0*PI/21.;
-
-    vec3 q = p;
-    float a = atan(q.y, q.x);
-
-    //a = mod(a+repa*.5,repa)-repa*.5;
-    float sector = floor(a/repa);
-
-    q.xy = r2d(sector*repa)*q.xy;
-    q -= vec3(1.+sin(sector+_time)+FFT(sector)*2., 0.,0.);
-
-    float repz = 5.8+sin(sector+_time*.01);
-
-    q.z = mod(q.z+repz*.5+_time*10.+sector*2.5,repz)-repz*.5;
-    //q.z *= .01;
-    acc = _min(acc, vec2(max(length(q.xy),abs(q.z)-1.), 0.));
-
-    return acc;
-}
-
-vec3 getNormkarenn(vec3 p, float d)
-{
-    vec2 e = vec2(0.01, 0.);
-    return -normalize(vec3(d)-vec3(mapkarenn(p-e.xyy).x,mapkarenn(p-e.yxy).x,mapkarenn(p-e.yyx).x));
-    //return normalize(cross(dFdx(p), dFdy(p)));
-}
-
-vec3 accColkarenn;
-
-vec3 tracekarenn(vec3 ro, vec3 rd, int steps)
-{
-    accColkarenn = vec3(0.);
-    vec3 p = ro;
-    for (int i = 0; i < 128; ++i)
-    {
-        vec2 res = mapkarenn(p);
-        if (res.x < 0.01)
-            return vec3(res.x, distance(p, ro), res.y);
-        accColkarenn += .15*vec3(sin(p.z+_time*5.)*.5+.5, .3+.2*abs(sin(p.z*5.)),.5)*(1.-sat(res.x/.2));
-        p+=rd*res.x;
-    }
-    return vec3(-1.);
-}
-
-vec3 rdrkarenn2(vec2 uv)
-{
-    vec3 col = vec3(0.,0.,0.);
-
-
-
-
-    vec3 ro = vec3(0.,0.,-5.);
-    vec3 ta = vec3(0.,0.,0.);
-    vec3 rd = normalize(ta-ro);
-
-    rd = getCam(rd, uv);
-
-    vec3 res = tracekarenn(ro, rd, 128);
-    if (res.y > 0.)
-    {
-        vec3 p = ro + res.y*rd;
-        vec3 n = getNormkarenn(p, res.x);
-        col = n*.5+.5;
-        col = vec3(1.);
-    }
-    col += accColkarenn;
-
-    float mask = length(uv)-.1;
-    float a = abs(atan(uv.y, uv.x)-PI*.5);
-    float coef = pow(FFT(a/PI), .5);
-    col = mix(col, 2.*vec3(.5+.1*sin(coef*3.),0.361+.3*sin(coef*5.+_time),0.361+.2*sin(coef))*(sat(mask*400.)), (.5+coef)*pow(1.-sat(mask*1.), 5.));
-    col = pow(col, vec3(2.2));
-    return col;
-}
-vec3 rdrkarenn(vec2 uv)
-{
-
-      vec3 col = rdrkarenn2(mix(uv, uv*r2d(sin(length(uv)+_time)), sat((abs(uv.x)-.2)*400.)));
-
-      col *= sat(1.-sat((abs(uv.x)-.2)*400.)+.5);
-      return col;
-}
-/*
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-    _time = texture(iChannel1, fragCoord/8.).x*.1+time;
-    vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.xx;
-
-    vec3 col = rdr(mix(uv, uv*r2d(sin(length(uv)+_time)), sat((abs(uv.x)-.2)*400.)));
-
-    col *= sat(1.-sat((abs(uv.x)-.2)*400.)+.5);
-
-    fragColor = vec4(col,1.0);
-}*/
-
-
-
-#ifndef TOOLS_INCLUDE
-#define TOOLS_INCLUDE
-
-precision highp float;
-
-uniform float time;
-uniform vec2 resolution;
-uniform sampler2D spectrum;
-uniform sampler2D midi;
-
-uniform sampler2D greyNoise;
-#define FFTI(a) time
-
-#define sat(a) clamp(a, 0., 1.)
-#define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
-
-#define EPS vec2(0.01, 0.)
-#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
-
-#define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
-
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -1351,7 +1153,7 @@ vec3 rdr2dnbcorridor(vec2 uv)
 
 vec3 rdrdnbcorridor(vec2 uv)
 {
-  _timednbcorridor = time;
+  _timednbcorridor = mtime;
 
       vec3 col = rdr2dnbcorridor(uv);
       col *= mix(vec3(0.5), vec3(1.), 1.-sat(lenny(uv*1.5)));
@@ -1399,6 +1201,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -1410,9 +1215,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -1502,7 +1307,7 @@ vec2 mapDarkRoom(vec3 p)
 {
     vec2 acc = vec2(10000.,-1.);
 
-    //acc = _min(acc, vec2(length(p-vec3(sin(time*2.)-.5,cos(time*1.7)+cos(time*.5)*.5,cos(time*3.)+8.))-.5, 2.));
+    //acc = _min(acc, vec2(length(p-vec3(sin(mtime*2.)-.5,cos(mtime*1.7)+cos(mtime*.5)*.5,cos(mtime*3.)+8.))-.5, 2.));
 
     acc = _min(acc, vec2(-(abs(p.y)-2.8), 0.));
     vec3 pwall = p;
@@ -1559,9 +1364,9 @@ vec3 getMatDarkRoom(vec3 rd, vec3 res, vec3 p, vec3 n)
         uvwall.y -= 1.8;
         uvwall.x = mod(uvwall.x+rep*.5,rep)-rep*.5;
         float sqr = _sqr(uvwall, vec2(1.4, .78));
-        float wincolfactor = sat(sin(FFTlow*10.+idwin*1.+3.*time*sign(p.y))*.5+.5);
+        float wincolfactor = sat(sin(FFTlow*10.+idwin*1.+3.*mtime*sign(p.y))*.5+.5);
         //wincolfactor += pow(FFT(.1),2.);
-        //wincolfactor *= (mod(time, .2)/.2)*FFT(.1);
+        //wincolfactor *= (mod(mtime, .2)/.2)*FFT(.1);
         vec3 rgbwin = mix(vec3(1.), vec3(1.,0.1,0.4), wincolfactor);
         col = mix(vec3(0.), rgbwin*(pow(FFT(.9),.5)+.5), 1.-sat(sqr*40.));
     }
@@ -1582,8 +1387,8 @@ vec3 rdrDarkRoom(vec2 uv)
 {
     vec3 col = vec3(0.);
 
-    vec3 ro = vec3(-2.+sin(time*.2),1.+sin(time*.25),-8.);
-    vec3 ta = vec3(-2.+sin(time*.2),0.+sin(time*.3)*.5,0.);
+    vec3 ro = vec3(-2.+sin(mtime*.2),1.+sin(mtime*.25),-8.);
+    vec3 ta = vec3(-2.+sin(mtime*.2),1.+sin(mtime*.3)*.5,0.);
     vec3 rd = normalize(ta-ro);
     rd = getCam(rd, uv);
 
@@ -1619,7 +1424,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.xx;
     seed=texture(iChannel0,uv).x;
-    seed+=fract(time);
+    seed+=fract(mtime);
     vec3 col = rdr(uv);
 
     col = mix(col, texture(iChannel2, fragCoord/iResolution.xy).xyz, .7);
@@ -1639,6 +1444,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -1650,9 +1458,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -1745,7 +1553,7 @@ vec2 mapmack(vec3 p)
   acc = _min(acc, vec2(length(p+vec3(0.,0.,-15.))-1., 0.));
 
   p.xz *= r2d(.5*sin(.1*p.y));
-  p.xz += vec2(sin(time), cos(time*.75+p.y*.1))*5.;
+  p.xz += vec2(sin(mtime), cos(mtime*.75+p.y*.1))*5.;
   float rad = 20.;
   vec3 pdart = p+vec3(0.,FFTI(.1)*50.,0.);
   float adart = atan(pdart.z, pdart.x);
@@ -1794,7 +1602,7 @@ vec3 tracemack(vec3 ro, vec3 rd, int steps)
     if (res.x < 0.01)
       return vec3(res.x, distance(p, ro), res.y);
     if (res.y < 0.)
-      accLight += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+time)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2;
+      accLight += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+mtime)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2;
     p+=rd*res.x*.5;
   }
   return vec3(-1.);
@@ -1855,6 +1663,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -1866,9 +1677,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -1980,7 +1791,7 @@ vec2 maptunneldnb(vec3 p)
   vec2 acc = vec2(1000.,-1.);
   float rep = 2.5;
   p= mod(p+rep*.5,rep)-rep*.5;
-  //p.xy*=r2d(time+p.z);
+  //p.xy*=r2d(mtime+p.z);
   acc = vec2(_bbox(p,vec3(1.),vec3(.2)),0.);
 
   return acc;
@@ -2026,9 +1837,9 @@ vec3 rdrtunneldnb(vec2 uv)
 {
   vec3 col;
 
-  float z = mod(time,18.);
-  vec3 ro = vec3(0.,0.,-5.+time);
-  vec3 ta = vec3(0.,0.,0.+time);
+  float z = mod(mtime,18.);
+  vec3 ro = vec3(0.,0.,-5.+mtime);
+  vec3 ta = vec3(0.,0.,0.+mtime);
   vec3 rd = normalize(ta-ro);
 
   rd = getCamtunneldnb(rd,uv);
@@ -2061,7 +1872,7 @@ vec3 rdrtunneldnb(vec2 uv)
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
   vec2 uv = (fragCoord.xy-vec2(.5)*iResolution.xy) / iResolution.xx;
   seed=texture(iChannel0,uv).x;
-  seed+=fract(time);
+  seed+=fract(mtime);
     uv *= r2d(PI*.5);
   vec3 col = rdr(uv);
   col = pow(col, vec3(2.));
@@ -2083,6 +1894,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -2094,9 +1908,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -2188,10 +2002,10 @@ vec2 maptunnelbars(vec3 p)
 
   vec3 op = p;
   float rep = 1.;
-//p.z+=time;
+//p.z+=mtime;
 float id = floor((p.z+rep*.5)/rep);
   p.z = mod(p.z+rep*.5,rep)-rep*.5;
-vec2 sz = vec2(5.+sin(id*.4+time)*.5,.5+.3*sin(time+p.z));
+vec2 sz = vec2(5.+sin(id*.4+mtime)*.5,.5+.3*sin(mtime+p.z));
   //p.xy *=r2d(PI*.25);
 //  id = sin(id)*10.;
   float shape = max((abs(_sqr(p.xy*r2d(id*1.57),
@@ -2241,7 +2055,7 @@ vec3 rdrtunnelbars(vec2 uv)
 {
   vec3 col = vec3(0.);
 
-  float z = time*10.;
+  float z = mtime*10.;
   vec3 ro = vec3(0.,0.,z+-5.);
   vec3 ta = vec3(0.,0.,z);
   vec3 rd = normalize(ta-ro);
@@ -2259,7 +2073,7 @@ vec3 rdrtunnelbars(vec2 uv)
       col = vec3(.2);
   }
   col+=accCol;
-  col.xy *=r2d(time);
+  col.xy *=r2d(mtime);
   col.xy = abs(col.xy);
 col = col.xxx;
 col *= mix(vec3(1.),vec3(1.,.2,.3),
@@ -2293,6 +2107,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
@@ -2304,9 +2121,9 @@ uniform sampler2D greyNoise;
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
-#define MIDI_BTN_S(a) (texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_M(a) (texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_BTN_R(a) (texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
 
 #define FFTlow (FFT(0.1) * MIDI_KNOB(0))
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
@@ -2447,8 +2264,8 @@ float mapbubblestunnel(vec3 p)
         float z = float(i)*3.-13.;
         vec3 q = p;
         q.xy =r2d(sector*stpRnd)*p.xy;
-        q -= vec3(5.,sin(z+time)*.05,z);
-        sp = min(sp, sph(q, 1.5+sin(z+time)));
+        q -= vec3(5.,sin(z+mtime)*.05,z);
+        sp = min(sp, sph(q, 1.5+sin(z+mtime)));
     }
     return sp;
 }
@@ -2475,14 +2292,14 @@ vec3 rdr2bubblestunnel(vec2 uv)
     for (int i = 0; i < 15; ++i)
     {
         float fi = float(i)/fcnt;
-        vec2 p = uv*r2d(fi*5.+time*fi*.1);
+        vec2 p = uv*r2d(fi*5.+mtime*fi*.1);
         float an = atan(p.y, p.x);
         float rep = TAU/(5.+float(i));
-        float b = mod(an+time*.1+.5*rep, rep)-.5*rep;
+        float b = mod(an+mtime*.1+.5*rep, rep)-.5*rep;
         p = vec2(sin(b), cos(b))*length(p);
-        acc = min(acc, abs(_sqr(p-vec2(0.,.1)*(1.+fi*3.+.1*sin(fi*15.+time)), vec2(.03)*pow(1.-fi, .75)))-.001);
+        acc = min(acc, abs(_sqr(p-vec2(0.,.1)*(1.+fi*3.+.1*sin(fi*15.+mtime)), vec2(.03)*pow(1.-fi, .75)))-.001);
     }
-    col = mix(col, vec3(1.), 1.-sat(acc*400.*(sin(time*.25)*.5+.5)));
+    col = mix(col, vec3(1.), 1.-sat(acc*400.*(sin(mtime*.25)*.5+.5)));
     //col += vec3(0.620,0.886,1.000)*pow(1.-sat(acc*10.), 5.);
     col = pow(col, vec3(2.));
     return col;
@@ -2491,8 +2308,8 @@ vec3 rdr2bubblestunnel(vec2 uv)
 vec3 rdr3Dbubblestunnel(vec2 uv)
 {
 vec3 col;
-  vec3 orig = vec3(0.,10.*sin(time)*0.,-20.+mod(time*15., 30.));
-  vec3 lookatpos = vec3(sin(time), 0., cos(time))*50.*0.;
+  vec3 orig = vec3(0.,10.*sin(mtime)*0.,-20.+mod(mtime*15., 30.));
+  vec3 lookatpos = vec3(sin(mtime), 0., cos(mtime))*50.*0.;
   vec3 dir = normalize(lookat(uv, lookatpos-orig));
   vec3 p = orig + dir;
 
@@ -2505,7 +2322,7 @@ vec3 col;
     if (d < 0.001)
     {
       vec3 norm = normalbubblestunnel(p,d);
-      vec3 lPos = 3.*vec3(sin(time),cos(time),sin(time*5.)*5.+4.);
+      vec3 lPos = 3.*vec3(sin(mtime),cos(mtime),sin(mtime*5.)*5.+4.);
       float val = sat(dot(norm,normalize(lPos-p)));
 
       col= mix(vec3(1.,.5,.5), .5*vec3(4, 100, 209)/255., 1.-pow(val,.25))+vec3(1.)*pow(val,2.);
@@ -2514,7 +2331,7 @@ vec3 col;
     p+= dir*d;
   }
   vec3 colB = 1.5*(1.-sat(lenny(uv*vec2(1.,3.))))*(vec3(4, 150, 209)/255.);
-  col += mix(colB, colB.xzy, sin(time));
+  col += mix(colB, colB.xzy, sin(mtime));
   //col *= rdr2(uv);
   return col;
 }
@@ -2535,7 +2352,7 @@ vec3 rdrScnbubblestunnel(vec2 uv)
 vec3 rdrbubblestunnel(vec2 uv)
 {
   //uv -= vec2(.5);//*iResolution.xy/iResolution.xx;
-  uv *= r2d(length(uv)*sin(time));
+  uv *= r2d(length(uv)*sin(mtime));
 //  uv*= 4.2; // horizontal
 uv*= 1.2; //vertical
   vec3 col = rdrScnbubblestunnel(uv);
@@ -2562,7 +2379,7 @@ uv*= 1.2; //vertical
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
   vec2 uv = fragCoord.xy / iResolution.xx;
   uv -= vec2(.5)*iResolution.xy/iResolution.xx;
-  uv *= r2d(length(uv)*sin(time));
+  uv *= r2d(length(uv)*sin(mtime));
 //  uv*= 4.2; // horizontal
 uv*= 1.2; //vertical
   vec3 col = rdrScnbubblestunnel(uv);
@@ -2590,7 +2407,8 @@ uv*= 1.2; //vertical
 
 vec3 rdrcomposite(vec2 uv)
 {
-  uv += (vec2(hash11(FFT(0.1)), hash11(FFT(0.2)))-.5)*MIDI_KNOB(0);
+  mtime = time*(MIDI_KNOB(2)*15.+1.);
+  uv += (vec2(hash11(FFT(0.1)), hash11(FFT(0.2)))-.5)*MIDI_KNOB(0)*.1;
   vec3 col = vec3(0.);
 
   //col = vec3(1.,0.,0.)*pow(FFT(uv.x),1.);
@@ -2602,7 +2420,7 @@ vec3 rdrcomposite(vec2 uv)
 
     if (MIDI_FADER(2) > 0.01)
       col += MIDI_FADER(2)*rdrDarkRoom(uv)*3.;
-/*
+
       if (MIDI_FADER(3) > 0.01)
         col += MIDI_FADER(3)*rdrmackjampsy(uv)*2.;
         if (MIDI_FADER(4) > 0.01)
@@ -2613,33 +2431,38 @@ vec3 rdrcomposite(vec2 uv)
             if (MIDI_FADER(6) > 0.01)
               col += MIDI_FADER(6)*rdrmack(uv)*2.;
               if (MIDI_FADER(7) > 0.01)
-                col += MIDI_FADER(7)*rdrbubblestunnel(uv)*2.;*/
+                col += MIDI_FADER(7)*rdrbubblestunnel(uv)*2.;
   float flicker = 1./16.;
-  col = mix(col, col+vec3(1.,.2,.5)*(1.-sat(length(uv))), MIDI_BTN_S(0)*mod(time, flicker)/flicker);
+  col = mix(col, col+vec3(1.,.2,.5)*(1.-sat(length(uv)))*2., FFT(0.1)*MIDI_KNOB(1)*mod(time, flicker)/flicker);
+  col = mix(col, col+vec3(1.,.2,.5).zxy*(1.-sat(length(uv)))*2., MIDI_BTN_S(0)*mod(time, flicker)/flicker);
   col = mix(col, col.zxy, MIDI_BTN_M(0)*mod(time, flicker)/flicker);
   col = mix(col, 1.-col.zxy, MIDI_BTN_R(0)*mod(time, flicker)/flicker);
-//col =mix(col, col.xxx, sat(MIDI_KNOB(7)*2.));
+col =mix(col, col.xxx, sat(MIDI_KNOB(7)*2.));
 return col;
 }
 
 void main() {
+//  time = time*MIDI_KNOB(2);
     vec2 uv = (gl_FragCoord.xy-.5*resolution.xy) / resolution.xx;
+    uv *= 1.+MIDI_KNOB(3)*4.;
     _seed = texture2D(greyNoise, gl_FragCoord.xy/resolution.xy).x+time;
 
     //uv +=  (vec2(rand(), rand())-.5)*FFTlow*.2;
     float stp = .02;
-    vec2 off = vec2(.02)*hash11(floor(uv.y/stp+FFT(0.1)*2.)*stp)*pow(FFT(0.5),.5)*15.*MIDI_KNOB(1);
+    //vec2 off = vec2(.02)*hash11(floor(uv.y/stp+FFT(0.1)*2.)*stp)*pow(FFT(0.5),.5)*15.*MIDI_KNOB(1);
     vec3 col = vec3(0.);
-    if (length(off) < 0.01)
+    col = rdrcomposite(uv);
+    col = mix(col, col.zxy, MIDI_KNOB(6));
+/*    if (length(off) < 0.01)
     {
-      col = rdrcomposite(uv);
     }
     else
     {
       col.x = rdrcomposite(uv+off).x;
       col.y = rdrcomposite(uv).y;
       col.z = rdrcomposite(uv-off).z;
-    }
+    }*/
 
     gl_FragColor = vec4(col, 1.0);
 }
+

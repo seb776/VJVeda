@@ -96,7 +96,7 @@ vec3 tracednbtunnel(vec3 ro, vec3 rd, int steps)
 
 vec3 rdrdnbtunnel(vec2 uv)
 {
-      _time = time+textureRepeat(greyNoise, uv).x*.5*(1.-sat(length(uv*3.)));
+      _time = mtime+textureRepeat(greyNoise, uv).x*.5*(1.-sat(length(uv*3.)));
     vec3 col = mix(vec3(1.000,0.439,0.302)*2.2, vec3(0.075,0.027,0.110), sat(length(uv*2.5)));
 
     vec3 ro = vec3(0., 0.,-5.);

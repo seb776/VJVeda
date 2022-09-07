@@ -8,7 +8,7 @@ vec2 mapmack(vec3 p)
   acc = _min(acc, vec2(length(p+vec3(0.,0.,-15.))-1., 0.));
 
   p.xz *= r2d(.5*sin(.1*p.y));
-  p.xz += vec2(sin(time), cos(time*.75+p.y*.1))*5.;
+  p.xz += vec2(sin(mtime), cos(mtime*.75+p.y*.1))*5.;
   float rad = 20.;
   vec3 pdart = p+vec3(0.,FFTI(.1)*50.,0.);
   float adart = atan(pdart.z, pdart.x);
@@ -57,7 +57,7 @@ vec3 tracemack(vec3 ro, vec3 rd, int steps)
     if (res.x < 0.01)
       return vec3(res.x, distance(p, ro), res.y);
     if (res.y < 0.)
-      accLight += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+time)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2;
+      accLight += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+mtime)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2;
     p+=rd*res.x*.5;
   }
   return vec3(-1.);

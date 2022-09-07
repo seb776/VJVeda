@@ -9,6 +9,9 @@ uniform sampler2D spectrum;
 uniform sampler2D midi;
 
 uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
 #define FFTI(a) time
 
 #define sat(a) clamp(a, 0., 1.)
