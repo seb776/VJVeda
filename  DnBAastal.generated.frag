@@ -2446,7 +2446,9 @@ void main() {
     vec2 uv = (gl_FragCoord.xy-.5*resolution.xy) / resolution.xx;
     uv *= 1.+MIDI_KNOB(3)*4.;
     _seed = texture2D(greyNoise, gl_FragCoord.xy/resolution.xy).x+time;
-
+    vec2 uv2 = uv*r2d(mtime);
+    uv2 = abs(uv2)+vec2(MIDI_KNOB(4), 0);
+    uv = mix(uv, uv2, sat(MIDI_KNOB(5)*2.));
     //uv +=  (vec2(rand(), rand())-.5)*FFTlow*.2;
     float stp = .02;
     //vec2 off = vec2(.02)*hash11(floor(uv.y/stp+FFT(0.1)*2.)*stp)*pow(FFT(0.5),.5)*15.*MIDI_KNOB(1);
