@@ -3,6 +3,9 @@
     "greyNoise": {
       "PATH": "./Textures/GreyNoise.jpg",
     },
+    "lolTex": {
+      "PATH": "./Textures/received_419901153575683.jpeg"
+    }
   },
 
   "vertexMode": "LINES",

@@ -7,8 +7,10 @@ precision mediump float;
 #include "Visuals/LSDWormhole.glsl"
 #include "Visuals/Mackjampsy.glsl"
 #include "Visuals/Mackjamtunnel.glsl"
-#include "Visuals/Karenn.glsl"
+#include "Visuals/PsySym.glsl"
 #include "Visuals/TunnelPsy.glsl"
+#include "Visuals/JunoPosition.glsl"
+
 
 
 void main() {
@@ -17,6 +19,10 @@ void main() {
     _seed = texture2D(greyNoise, gl_FragCoord.xy/resolution.xy).x+time;
 
     uv +=  (vec2(rand(), rand())-.5)*FFTlow*.2;
+    uv = mix(uv, uv*r2d(time), MIDI_KNOB(5));
+    vec2 rep = vec2((MIDI_KNOB(4))*2.);
+    uv = mod(uv+rep*.5,rep)-rep*.5;
+    uv *= 1.+length(uv)*35.*MIDI_KNOB(3);
   //  uv = abs(uv);
     vec3 col = vec3(0.);
 
@@ -33,9 +39,11 @@ void main() {
           if (MIDI_FADER(4) > 0.01)
             col += MIDI_FADER(4)*rdrmackjamtunnel(uv)*2.;
             if (MIDI_FADER(5) > 0.01)
-              col += MIDI_FADER(5)*rdrkarenn(uv)*2.;
+              col += MIDI_FADER(5)*rdrpsysym(uv)*2.;
               if (MIDI_FADER(6) > 0.01)
                 col += MIDI_FADER(6)*rdrtunnelpsy(uv)*2.;
+                if (MIDI_FADER(7) > 0.01)
+                  col += MIDI_FADER(7)*rdrjunoposition(uv)*2.;
     float flicker = 1./16.;
     col = mix(col, col+vec3(1.,.2,.5)*(1.-sat(length(uv)))*2., MIDI_BTN_S(0)*mod(time, flicker)/flicker);
     col = mix(col, (1.-col)*(1.-sat(length(uv)))*2., MIDI_BTN_M(0)*mod(time, flicker)/flicker);

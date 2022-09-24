@@ -17,7 +17,7 @@ void main() {
 
     //col = vec3(1.,0.,0.)*pow(FFT(uv.x),1.);
     if (MIDI_FADER(0) > 0.01)
-      col += MIDI_FADER(0)*rdrDarkRoom(uv)*2.;
+      col += MIDI_FADER(0)*rdrDarkRoom(uv)*3.;
     if (MIDI_FADER(1) > 0.01)
       col += MIDI_FADER(1)*rdrmack(uv)*2.;
     if (MIDI_FADER(2) > 0.01)

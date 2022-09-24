@@ -1,6 +1,6 @@
 precision mediump float;
 uniform sampler2D backbuffer;
-
+uniform sampler2D lolTex;
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
 
@@ -1649,6 +1649,191 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }*/
 
 
+#ifndef TOOLS_INCLUDE
+#define TOOLS_INCLUDE
+
+precision highp float;
+
+uniform float time;
+uniform vec2 resolution;
+uniform sampler2D spectrum;
+uniform sampler2D midi;
+
+uniform sampler2D greyNoise;
+
+float mtime; // modulated time
+
+#define FFTI(a) time
+
+#define sat(a) clamp(a, 0., 1.)
+#define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
+
+#define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
+
+#define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
+#define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
+
+#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
+
+#define FFTlow (FFT(0.1) * MIDI_KNOB(0))
+#define FFTmid (FFT(0.5) * MIDI_KNOB(1))
+#define FFThigh (FFT(0.7) * MIDI_KNOB(2))
+#define PI 3.14159265
+#define TAU (PI*2.0)
+float hash11(float seed)
+{
+    return fract(sin(seed*123.456)*123.456);
+}
+
+float _cube(vec3 p, vec3 s)
+{
+  vec3 l = abs(p)-s;
+  return max(l.x, max(l.y, l.z));
+}
+float _cucube(vec3 p, vec3 s, vec3 th)
+{
+    vec3 l = abs(p)-s;
+    float cube = max(max(l.x, l.y), l.z);
+    l = abs(l)-th;
+    float x = max(l.y, l.z);
+    float y = max(l.x, l.z);
+    float z = max(l.x, l.y);
+
+    return max(min(min(x, y), z), cube);
+}
+float _seed;
+
+float rand()
+{
+    _seed++;
+    return hash11(_seed);
+}
+
+mat2 r2d(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+
+vec3 getCam(vec3 rd, vec2 uv)
+{
+    vec3 r = normalize(cross(rd, vec3(0.,1.,0.)));
+    vec3 u = normalize(cross(rd, r));
+    return normalize(rd+r*uv.x+u*uv.y);
+}
+
+float lenny(vec2 v)
+{
+    return abs(v.x)+abs(v.y);
+}
+float _sqr(vec2 p, vec2 s)
+{
+    vec2 l = abs(p)-s;
+    return max(l.x, l.y);
+}
+float _cir(vec2 uv, float sz)
+{
+  return length(uv)-sz;
+}
+
+float _loz(vec2 uv,float sz)
+{
+  return lenny(uv)-sz;
+}
+vec2 _min(vec2 a, vec2 b)
+{
+    if (a.x < b.x)
+        return a;
+    return b;
+}
+vec2 _max(vec2 a, vec2 b)
+{
+  if (a.x > b.x)
+      return a;
+  return b;
+}
+
+// To replace missing behavior in veda
+vec4 textureRepeat(sampler2D sampler, vec2 uv)
+{
+  return texture2D(sampler, mod(uv, vec2(1.)));
+}
+
+#endif // !TOOLS_INCLUDE
+
+
+
+float _star(vec2 uv, float sz, float t)
+{
+  float a = atan(uv.y,uv.x);
+  float stp = PI*2./4.;
+  float sector = mod(a+stp*.5,stp)-stp*.5;
+  uv = vec2(sin(sector),cos(sector))*length(uv);
+  return _sqr(uv-vec2(0.,sz*2.), vec2(sz*.05,sz));
+}
+
+vec3 rdrtunneltargets3(vec2 uv, float sharp)
+{
+  uv*=.5;
+  vec2 ouv = uv;
+
+  vec3 col = vec3(0.);
+  float shp = 400.*sharp;
+
+  vec2 rep = vec2(.5);
+  vec2 id = floor((uv+rep*.5)/rep);
+  uv = mod(uv+rep*.5,rep)-rep*.5;
+  uv*=r2d(sin(time+id.x));
+
+  float sz = .05;
+  float maska = sat(sin(id.x*5.+id.y*100.+id.y*5.+length(uv)*15.-time*5.));
+  float cir = abs(length(uv)-sz*2.)-.001;
+  col = maska*vec3(1.)*(1.-sat(_star(uv,sz,0.)*shp));
+  col = mix(col,vec3(1.),maska*(1.-sat(cir*shp)));
+  col += maska*.5*vec3(1.)*smoothstep(0.,1.,
+    1.-sat(_star(uv,sz,0.)*20.*sharp));
+  col += maska*.5*vec3(1.)*(1.-sat(cir*20.*sharp));
+  col*=vec3(sin(length(id))*.2+.7,.5,.1);
+  return col;
+}
+
+vec3 rdr2rdrtunneltargets(vec2 uv,vec2 ouv)
+{
+
+  vec3 col=rdrtunneltargets3(uv*1.5,1.);
+  col+= rdrtunneltargets3(uv*.5+.1,.25).zxy*.5;
+  col+= rdrtunneltargets3(uv*2.5+.1,.2).xxx*vec3(.75,.2,.7)*.15;
+ col = col*1.5;
+ vec3 rgb = vec3(.1,.7,.7);
+ rgb.xy*=r2d(time);
+ rgb= abs(rgb);
+ col = mix(col, rgb*2.,
+   pow(sat(.05/length(ouv)),1.));
+  return col;
+}
+
+vec3 rdrtunneltargets(vec2 uv)
+{
+  vec2 ouv = uv;
+ // uv.x += sin(length(uv)+time)*.5;
+  uv*=r2d(.1*sin(.5*time+5.*length(uv))/length(uv));
+  uv = vec2(5.*atan(uv.y,uv.x)/PI,1./length(uv)+5.*time);
+  vec3 col=rdr2rdrtunneltargets(uv,ouv);
+  col = pow(col, vec3(1.4));
+  return col;
+}
+/*
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+
+  vec2 uv = (fragCoord.xy-.5*iResolution.xy) /iResolution.xx;
+  vec2 ouv = uv;
+ // uv.x += sin(length(uv)+time)*.5;
+  uv*=r2d(.1*sin(.5*time+5.*length(uv))/length(uv));
+  uv = vec2(5.*atan(uv.y,uv.x)/PI,1./length(uv)+5.*time);
+  vec3 col=rdr2(uv,ouv);
+  col = pow(col, vec3(1.4));
+  fragColor = vec4(col, 1.0);
+}*/
+
 
 // Fork of "halu goa" by z0rg. https://shadertoy.com/view/NsdGWH
 // 2021-12-13 21:44:29
@@ -2419,7 +2604,7 @@ vec3 rdrcomposite(vec2 uv)
     col += MIDI_FADER(1)*rdrdnbcorridor(uv)*2.;
 
     if (MIDI_FADER(2) > 0.01)
-      col += MIDI_FADER(2)*rdrDarkRoom(uv)*3.;
+      ;//col += MIDI_FADER(2)*rdrDarkRoom(uv)*3.;
 
       if (MIDI_FADER(3) > 0.01)
         col += MIDI_FADER(3)*rdrmackjampsy(uv)*2.;
@@ -2429,7 +2614,7 @@ vec3 rdrcomposite(vec2 uv)
             col += MIDI_FADER(5)*rdrtunneldnb(uv)*2.;
 
             if (MIDI_FADER(6) > 0.01)
-              col += MIDI_FADER(6)*rdrmack(uv)*2.;
+              col += MIDI_FADER(6)*rdrtunneltargets(uv)*2.;
               if (MIDI_FADER(7) > 0.01)
                 col += MIDI_FADER(7)*rdrbubblestunnel(uv)*2.;
   float flicker = 1./16.;
@@ -2464,7 +2649,7 @@ void main() {
       col.y = rdrcomposite(uv).y;
       col.z = rdrcomposite(uv-off).z;
     }*/
-
+    col += textureRepeat(lolTex, uv-.5).xyz*MIDI_FADER(2)*2.;
     gl_FragColor = vec4(col, 1.0);
 }
 

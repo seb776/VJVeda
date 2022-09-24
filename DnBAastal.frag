@@ -1,6 +1,6 @@
 precision mediump float;
 uniform sampler2D backbuffer;
-
+uniform sampler2D lolTex;
 #include "tools.glsl"
 
 #include "Visuals/DnBTunnel.glsl"
@@ -11,7 +11,7 @@ uniform sampler2D backbuffer;
 
 #include "Visuals/DarkRoom.glsl"
 #include "Visuals/Mackjam.glsl"
-
+#include "Visuals/TunnelTargets.glsl"
 #include "Visuals/TunnelDnB.glsl"
 #include "Visuals/TunnelBars.glsl"
 #include "Visuals/BubblesTunnel.glsl"
@@ -30,7 +30,7 @@ vec3 rdrcomposite(vec2 uv)
     col += MIDI_FADER(1)*rdrdnbcorridor(uv)*2.;
 
     if (MIDI_FADER(2) > 0.01)
-      col += MIDI_FADER(2)*rdrDarkRoom(uv)*3.;
+      ;//col += MIDI_FADER(2)*rdrDarkRoom(uv)*3.;
 
       if (MIDI_FADER(3) > 0.01)
         col += MIDI_FADER(3)*rdrmackjampsy(uv)*2.;
@@ -40,7 +40,7 @@ vec3 rdrcomposite(vec2 uv)
             col += MIDI_FADER(5)*rdrtunneldnb(uv)*2.;
 
             if (MIDI_FADER(6) > 0.01)
-              col += MIDI_FADER(6)*rdrmack(uv)*2.;
+              col += MIDI_FADER(6)*rdrtunneltargetsfull(uv)*2.;
               if (MIDI_FADER(7) > 0.01)
                 col += MIDI_FADER(7)*rdrbubblestunnel(uv)*2.;
   float flicker = 1./16.;
@@ -75,6 +75,6 @@ void main() {
       col.y = rdrcomposite(uv).y;
       col.z = rdrcomposite(uv-off).z;
     }*/
-
+    col += textureRepeat(lolTex, uv-.5).xyz*MIDI_FADER(2)*2.;
     gl_FragColor = vec4(col, 1.0);
 }
