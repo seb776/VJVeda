@@ -1,6 +1,6 @@
 precision mediump float;
 uniform sampler2D backbuffer;
-uniform sampler2D lolTex;
+uniform sampler2D cookieTex;
 #include "tools.glsl"
 
 #include "Visuals/DnBTunnel.glsl"
@@ -75,6 +75,6 @@ void main() {
       col.y = rdrcomposite(uv).y;
       col.z = rdrcomposite(uv-off).z;
     }*/
-    col += textureRepeat(lolTex, uv-.5).xyz*MIDI_FADER(2)*2.;
+    col += textureRepeat(cookieTex, uv-.5).xyz*MIDI_FADER(2)*2.;
     gl_FragColor = vec4(col, 1.0);
 }

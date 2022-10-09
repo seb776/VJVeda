@@ -5,6 +5,9 @@
     },
     "lolTex": {
       "PATH": "./Textures/received_419901153575683.jpeg"
+    },
+    "cookieTex": {
+      "PATH": "./Textures/Cookie.jpg"
     }
   },
 

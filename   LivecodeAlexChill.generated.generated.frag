@@ -290,196 +290,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }*/
 
 
-#ifndef TOOLS_INCLUDE
-#define TOOLS_INCLUDE
-
-precision highp float;
-
-uniform float time;
-uniform vec2 resolution;
-uniform sampler2D spectrum;
-uniform sampler2D midi;
-
-uniform sampler2D greyNoise;
-
-float mtime; // modulated time
-
-#define FFTI(a) time
-
-#define sat(a) clamp(a, 0., 1.)
-#define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
-
-#define EPS vec2(0.01, 0.)
-#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
-
-#define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
-#define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
-
-#define MIDI_BTN_S(a) sat(texture2D(midi, vec2(176. /  256., (32.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
-#define MIDI_BTN_M(a) sat(texture2D(midi, vec2(176. / 256., (48.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
-#define MIDI_BTN_R(a) sat(texture2D(midi, vec2(176. / 256., (64.+min(max(float(a), 0.), 7.)) / 128.)).x*10.)
-
-#define FFTlow (FFT(0.1) * MIDI_KNOB(0))
-#define FFTmid (FFT(0.5) * MIDI_KNOB(1))
-#define FFThigh (FFT(0.7) * MIDI_KNOB(2))
-#define PI 3.14159265
-#define TAU (PI*2.0)
-float hash11(float seed)
-{
-    return fract(sin(seed*123.456)*123.456);
-}
-
-float _cube(vec3 p, vec3 s)
-{
-  vec3 l = abs(p)-s;
-  return max(l.x, max(l.y, l.z));
-}
-float _cucube(vec3 p, vec3 s, vec3 th)
-{
-    vec3 l = abs(p)-s;
-    float cube = max(max(l.x, l.y), l.z);
-    l = abs(l)-th;
-    float x = max(l.y, l.z);
-    float y = max(l.x, l.z);
-    float z = max(l.x, l.y);
-
-    return max(min(min(x, y), z), cube);
-}
-float _seed;
-
-float rand()
-{
-    _seed++;
-    return hash11(_seed);
-}
-
-mat2 r2d(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
-
-vec3 getCam(vec3 rd, vec2 uv)
-{
-    vec3 r = normalize(cross(rd, vec3(0.,1.,0.)));
-    vec3 u = normalize(cross(rd, r));
-    return normalize(rd+r*uv.x+u*uv.y);
-}
-
-float lenny(vec2 v)
-{
-    return abs(v.x)+abs(v.y);
-}
-float _sqr(vec2 p, vec2 s)
-{
-    vec2 l = abs(p)-s;
-    return max(l.x, l.y);
-}
-float _cir(vec2 uv, float sz)
-{
-  return length(uv)-sz;
-}
-
-float _loz(vec2 uv,float sz)
-{
-  return lenny(uv)-sz;
-}
-vec2 _min(vec2 a, vec2 b)
-{
-    if (a.x < b.x)
-        return a;
-    return b;
-}
-vec2 _max(vec2 a, vec2 b)
-{
-  if (a.x > b.x)
-      return a;
-  return b;
-}
-
-// To replace missing behavior in veda
-vec4 textureRepeat(sampler2D sampler, vec2 uv)
-{
-  return texture2D(sampler, mod(uv, vec2(1.)));
-}
-
-#endif // !TOOLS_INCLUDE
-
-
-
-float _star(vec2 uv, float sz, float t)
-{
-  float a = atan(uv.y,uv.x);
-  float stp = PI*2./4.;
-  float sector = mod(a+stp*.5,stp)-stp*.5;
-  uv = vec2(sin(sector),cos(sector))*length(uv);
-  return _sqr(uv-vec2(0.,sz*2.), vec2(sz*.05,sz));
-}
-
-vec3 rdrtunneltargets3(vec2 uv, float sharp)
-{
-  uv*=.5;
-  vec2 ouv = uv;
-
-  vec3 col = vec3(0.);
-  float shp = 400.*sharp;
-
-  vec2 rep = vec2(.5);
-  vec2 id = floor((uv+rep*.5)/rep);
-  uv = mod(uv+rep*.5,rep)-rep*.5;
-  uv*=r2d(sin(time+id.x));
-
-  float sz = .05;
-  float maska = sat(sin(id.x*5.+id.y*100.+id.y*5.+length(uv)*15.-time*5.));
-  float cir = abs(length(uv)-sz*2.)-.001;
-  col = maska*vec3(1.)*(1.-sat(_star(uv,sz,0.)*shp));
-  col = mix(col,vec3(1.),maska*(1.-sat(cir*shp)));
-  col += maska*.5*vec3(1.)*smoothstep(0.,1.,
-    1.-sat(_star(uv,sz,0.)*20.*sharp));
-  col += maska*.5*vec3(1.)*(1.-sat(cir*20.*sharp));
-  col*=vec3(sin(length(id))*.2+.7,.5,.1);
-  return col;
-}
-
-vec3 rdr2rdrtunneltargets(vec2 uv,vec2 ouv)
-{
-
-  vec3 col=rdrtunneltargets3(uv*1.5,1.);
-  col+= rdrtunneltargets3(uv*.5+.1,.25).zxy*.5;
-  col+= rdrtunneltargets3(uv*2.5+.1,.2).xxx*vec3(.75,.2,.7)*.15;
- col = col*1.5;
- vec3 rgb = vec3(.1,.7,.7);
- rgb.xy*=r2d(time);
- rgb= abs(rgb);
- col = mix(col, rgb*2.,
-   pow(sat(.05/length(ouv)),1.));
-  return col;
-}
-
-vec3 rdrtunneltargets(vec2 uv)
-{
-  vec2 ouv = uv;
- // uv.x += sin(length(uv)+time)*.5;
-  uv*=r2d(.1*sin(.5*time+5.*length(uv))/length(uv));
-  uv = vec2(5.*atan(uv.y,uv.x)/PI,1./length(uv)+5.*time);
-  vec3 col=rdr2rdrtunneltargets(uv,ouv);
-  col = pow(col, vec3(1.4));
-  return col;
-}
-/*
-void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-
-  vec2 uv = (fragCoord.xy-.5*iResolution.xy) /iResolution.xx;
-  vec2 ouv = uv;
- // uv.x += sin(length(uv)+time)*.5;
-  uv*=r2d(.1*sin(.5*time+5.*length(uv))/length(uv));
-  uv = vec2(5.*atan(uv.y,uv.x)/PI,1./length(uv)+5.*time);
-  vec3 col=rdr2(uv,ouv);
-  col = pow(col, vec3(1.4));
-  fragColor = vec4(col, 1.0);
-}*/
-
-
 
 vec3 getCam2(vec3 rd, vec2 uv)
 {
-  float fov = 5.;//12.*sin(time*.1);
+  float fov = 3.;//12.*sin(time*.1);
     vec3 r = normalize(cross(rd, vec3(0.,1.,0.)));
     vec3 u = normalize(cross(rd, r));
     return normalize(rd+fov*(r*uv.x+u*uv.y));
@@ -488,16 +302,16 @@ vec3 getCam2(vec3 rd, vec2 uv)
 vec2 map(vec3 p)
 {
   vec2 acc = vec2(10000., -1.);
-//p.z += time;
+
   vec3 repnew = vec3(14.);
   vec3 pnew = p;
   pnew.xy *= r2d(time*.5+pnew.z*.01);
-  vec3 limnew = vec3(2.5)*repnew;
+  vec3 limnew = vec3(4.5)*repnew;
   pnew = clamp(pnew, -limnew, limnew);
   vec3 idnew = floor((pnew+repnew*.5)/repnew);
   pnew = mod(pnew+repnew*.5, repnew)-repnew*.5;
-  float sznew = FFT(idnew.z*.005)*1.;
-  float shapenew = _cube(pnew, vec3(sznew+1.+1.5*sin(idnew.z+time*3.)));// length(pnew)-.5-sznew;
+  float sznew = FFT(idnew.z*.005)*3.;
+  float shapenew = _cube(pnew, vec3(sznew+.5));// length(pnew)-.5-sznew;
   acc = _min(acc, vec2(shapenew, 0.));
 
 
@@ -551,9 +365,9 @@ vec3 getNorm(vec3 p, float d)
 
 vec3 rdr(vec2 uv)
 {
-  float d = 70.;
+  float d = 40.;
   float t =   mtime;
-    vec3 ro = vec3(sin(t)*d, -5.+sin(time*.2), cos(t)*d);
+    vec3 ro = vec3(sin(t)*d, -4., cos(t)*d);
     vec3 ta = vec3(0.,-1.,0.);
     vec3 rd = normalize(ta-ro);
     rd = getCam2(rd, uv);
@@ -568,13 +382,9 @@ vec3 rdr(vec2 uv)
         //col = n *.5+.5;
         col = sat(dot(n, normalize(vec3(sin(time), 0., cos(time)))))*vec3(.1,.2,.8);
         vec3 refl = normalize(reflect(rd, n) + (vec3(rand(),rand(),rand())-.5)*.1);
-        vec3 resrefl = trace(p+n*.01, refl)*3.;
-        col += accCol*3.;
-        col += rdrtunneltargets(uv + (vec2(rand(), rand())-.5)*.1);
+        vec3 resrefl = trace(p+n*.01, refl);
+        col += accCol;
     }
-    else
-    col += rdrtunneltargets(uv);
-
   col += acc0;
     return col;
 }
@@ -605,41 +415,25 @@ vec3 rdrChroma(vec2 uv, float stepp)
   vec3 col = vec3(0.);
   vec2 stp = vec2(stepp);
   uv = floor(uv/stp)*stp;
-  vec2 off = vec2(.4)*.01*sin(uv.y*5.+time*2.);
+  vec2 off = vec2(.4)*.05*sin(uv.y*5.+time*2.);
   col += rdr(uv+off).x*vec3(.5,.1,.7);
   col += rdr(uv).y*vec3(.2,.8, .2);
   col += rdr(uv-off)*vec3(.7,.2,.8);
   return col;
 }
 
-vec3 rdr3(vec2 uv)
-{
-  vec3 col = vec3(0.);
-  return col;
-}
-
 void main() {
   mtime = time * MIDI_KNOB(0);
     vec2 uv = (gl_FragCoord.xy-.5*resolution.xy) / resolution.xx;
-    _seed = textureRepeat(greyNoise,uv).x+time;
     vec2 off = FFT(.5)*vec2(.02,0.);
     vec3 col = vec3(0.);
-    //uv += vec2(sin(time*.2), cos(time*.1))*.1;
-  float an = atan(uv.y, uv.x);
-    float stp = PI*2./6.;
-    float b = mod(an+stp*.5,stp)-stp*.5;
-   //uv = vec2(sin(b), cos(b))*length(uv);
-   //uv = abs(uv);
-
-    //uv *= r2d(time*.1);
   //  col.x = rdr2(uv+off).x;
   //  col.y = rdr2(uv).y;
   //  col.z = rdr2(uv-off).x;
     col *= MIDI_KNOB(2);
 //col += .1*rdrjunoposition(uv)*.35;
-col += 1.*rdrChroma(uv, .01)*.125;
-col += 1.*rdrChroma(uv, .003)*.5;
-col = pow(max(col, vec3(0.)), vec3(1.5));
+col += 1.*rdrChroma(uv, .02)*.25;
+col += 1.*rdrChroma(uv, .003);
 //textureRepeat(backbuffer, uv).xyz;
     gl_FragColor = vec4(col, 1.0);
 }
