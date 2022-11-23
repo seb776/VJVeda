@@ -2652,4 +2652,3 @@ void main() {
     col += textureRepeat(cookieTex, uv-.5).xyz*MIDI_FADER(2)*2.;
     gl_FragColor = vec4(col, 1.0);
 }
-
