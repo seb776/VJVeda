@@ -3,6 +3,8 @@ precision mediump float;
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
 
+precision highp float;
+
 uniform float time;
 uniform vec2 resolution;
 uniform sampler2D spectrum;
@@ -14,7 +16,8 @@ uniform sampler2D greyNoise;
 #define sat(a) clamp(a, 0., 1.)
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
-
+#define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -27,6 +30,7 @@ uniform sampler2D greyNoise;
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
 #define FFThigh (FFT(0.7) * MIDI_KNOB(2))
 #define PI 3.14159265
+#define TAU (PI*2.0)
 float hash11(float seed)
 {
     return fract(sin(seed*123.456)*123.456);
@@ -37,7 +41,17 @@ float _cube(vec3 p, vec3 s)
   vec3 l = abs(p)-s;
   return max(l.x, max(l.y, l.z));
 }
+float _cucube(vec3 p, vec3 s, vec3 th)
+{
+    vec3 l = abs(p)-s;
+    float cube = max(max(l.x, l.y), l.z);
+    l = abs(l)-th;
+    float x = max(l.y, l.z);
+    float y = max(l.x, l.z);
+    float z = max(l.x, l.y);
 
+    return max(min(min(x, y), z), cube);
+}
 float _seed;
 
 float rand()
@@ -54,16 +68,36 @@ vec3 getCam(vec3 rd, vec2 uv)
     vec3 u = normalize(cross(rd, r));
     return normalize(rd+r*uv.x+u*uv.y);
 }
+
+float lenny(vec2 v)
+{
+    return abs(v.x)+abs(v.y);
+}
 float _sqr(vec2 p, vec2 s)
 {
     vec2 l = abs(p)-s;
     return max(l.x, l.y);
+}
+float _cir(vec2 uv, float sz)
+{
+  return length(uv)-sz;
+}
+
+float _loz(vec2 uv,float sz)
+{
+  return lenny(uv)-sz;
 }
 vec2 _min(vec2 a, vec2 b)
 {
     if (a.x < b.x)
         return a;
     return b;
+}
+vec2 _max(vec2 a, vec2 b)
+{
+  if (a.x > b.x)
+      return a;
+  return b;
 }
 
 // To replace missing behavior in veda
@@ -73,11 +107,14 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
 
+precision highp float;
+
 uniform float time;
 uniform vec2 resolution;
 uniform sampler2D spectrum;
@@ -89,7 +126,8 @@ uniform sampler2D greyNoise;
 #define sat(a) clamp(a, 0., 1.)
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
-
+#define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -102,6 +140,7 @@ uniform sampler2D greyNoise;
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
 #define FFThigh (FFT(0.7) * MIDI_KNOB(2))
 #define PI 3.14159265
+#define TAU (PI*2.0)
 float hash11(float seed)
 {
     return fract(sin(seed*123.456)*123.456);
@@ -112,7 +151,17 @@ float _cube(vec3 p, vec3 s)
   vec3 l = abs(p)-s;
   return max(l.x, max(l.y, l.z));
 }
+float _cucube(vec3 p, vec3 s, vec3 th)
+{
+    vec3 l = abs(p)-s;
+    float cube = max(max(l.x, l.y), l.z);
+    l = abs(l)-th;
+    float x = max(l.y, l.z);
+    float y = max(l.x, l.z);
+    float z = max(l.x, l.y);
 
+    return max(min(min(x, y), z), cube);
+}
 float _seed;
 
 float rand()
@@ -129,16 +178,36 @@ vec3 getCam(vec3 rd, vec2 uv)
     vec3 u = normalize(cross(rd, r));
     return normalize(rd+r*uv.x+u*uv.y);
 }
+
+float lenny(vec2 v)
+{
+    return abs(v.x)+abs(v.y);
+}
 float _sqr(vec2 p, vec2 s)
 {
     vec2 l = abs(p)-s;
     return max(l.x, l.y);
+}
+float _cir(vec2 uv, float sz)
+{
+  return length(uv)-sz;
+}
+
+float _loz(vec2 uv,float sz)
+{
+  return lenny(uv)-sz;
 }
 vec2 _min(vec2 a, vec2 b)
 {
     if (a.x < b.x)
         return a;
     return b;
+}
+vec2 _max(vec2 a, vec2 b)
+{
+  if (a.x > b.x)
+      return a;
+  return b;
 }
 
 // To replace missing behavior in veda
@@ -148,6 +217,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 vec2 mapDarkRoom(vec3 p)
@@ -279,8 +349,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }*/
 
 
+
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
+
+precision highp float;
 
 uniform float time;
 uniform vec2 resolution;
@@ -293,7 +366,8 @@ uniform sampler2D greyNoise;
 #define sat(a) clamp(a, 0., 1.)
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
-
+#define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -306,6 +380,7 @@ uniform sampler2D greyNoise;
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
 #define FFThigh (FFT(0.7) * MIDI_KNOB(2))
 #define PI 3.14159265
+#define TAU (PI*2.0)
 float hash11(float seed)
 {
     return fract(sin(seed*123.456)*123.456);
@@ -316,7 +391,17 @@ float _cube(vec3 p, vec3 s)
   vec3 l = abs(p)-s;
   return max(l.x, max(l.y, l.z));
 }
+float _cucube(vec3 p, vec3 s, vec3 th)
+{
+    vec3 l = abs(p)-s;
+    float cube = max(max(l.x, l.y), l.z);
+    l = abs(l)-th;
+    float x = max(l.y, l.z);
+    float y = max(l.x, l.z);
+    float z = max(l.x, l.y);
 
+    return max(min(min(x, y), z), cube);
+}
 float _seed;
 
 float rand()
@@ -333,16 +418,36 @@ vec3 getCam(vec3 rd, vec2 uv)
     vec3 u = normalize(cross(rd, r));
     return normalize(rd+r*uv.x+u*uv.y);
 }
+
+float lenny(vec2 v)
+{
+    return abs(v.x)+abs(v.y);
+}
 float _sqr(vec2 p, vec2 s)
 {
     vec2 l = abs(p)-s;
     return max(l.x, l.y);
+}
+float _cir(vec2 uv, float sz)
+{
+  return length(uv)-sz;
+}
+
+float _loz(vec2 uv,float sz)
+{
+  return lenny(uv)-sz;
 }
 vec2 _min(vec2 a, vec2 b)
 {
     if (a.x < b.x)
         return a;
     return b;
+}
+vec2 _max(vec2 a, vec2 b)
+{
+  if (a.x > b.x)
+      return a;
+  return b;
 }
 
 // To replace missing behavior in veda
@@ -352,6 +457,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 vec2 mapmack(vec3 p)
@@ -456,8 +562,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	fragColor = vec4(col, 1.);
 }*/
 
+
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
+
+precision highp float;
 
 uniform float time;
 uniform vec2 resolution;
@@ -470,7 +579,8 @@ uniform sampler2D greyNoise;
 #define sat(a) clamp(a, 0., 1.)
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
-
+#define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -483,6 +593,7 @@ uniform sampler2D greyNoise;
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
 #define FFThigh (FFT(0.7) * MIDI_KNOB(2))
 #define PI 3.14159265
+#define TAU (PI*2.0)
 float hash11(float seed)
 {
     return fract(sin(seed*123.456)*123.456);
@@ -493,7 +604,17 @@ float _cube(vec3 p, vec3 s)
   vec3 l = abs(p)-s;
   return max(l.x, max(l.y, l.z));
 }
+float _cucube(vec3 p, vec3 s, vec3 th)
+{
+    vec3 l = abs(p)-s;
+    float cube = max(max(l.x, l.y), l.z);
+    l = abs(l)-th;
+    float x = max(l.y, l.z);
+    float y = max(l.x, l.z);
+    float z = max(l.x, l.y);
 
+    return max(min(min(x, y), z), cube);
+}
 float _seed;
 
 float rand()
@@ -510,16 +631,36 @@ vec3 getCam(vec3 rd, vec2 uv)
     vec3 u = normalize(cross(rd, r));
     return normalize(rd+r*uv.x+u*uv.y);
 }
+
+float lenny(vec2 v)
+{
+    return abs(v.x)+abs(v.y);
+}
 float _sqr(vec2 p, vec2 s)
 {
     vec2 l = abs(p)-s;
     return max(l.x, l.y);
+}
+float _cir(vec2 uv, float sz)
+{
+  return length(uv)-sz;
+}
+
+float _loz(vec2 uv,float sz)
+{
+  return lenny(uv)-sz;
 }
 vec2 _min(vec2 a, vec2 b)
 {
     if (a.x < b.x)
         return a;
     return b;
+}
+vec2 _max(vec2 a, vec2 b)
+{
+  if (a.x > b.x)
+      return a;
+  return b;
 }
 
 // To replace missing behavior in veda
@@ -529,6 +670,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 float _rsqr(vec2 uv, vec2 s, float r)
@@ -633,10 +775,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     fragColor = vec4(col,1.0);
 }*/
 
+
 // Fork of "halu goa" by z0rg. https://shadertoy.com/view/NsdGWH
 // 2021-12-13 21:44:29
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
+
+precision highp float;
 
 uniform float time;
 uniform vec2 resolution;
@@ -649,7 +794,8 @@ uniform sampler2D greyNoise;
 #define sat(a) clamp(a, 0., 1.)
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
-
+#define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -662,6 +808,7 @@ uniform sampler2D greyNoise;
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
 #define FFThigh (FFT(0.7) * MIDI_KNOB(2))
 #define PI 3.14159265
+#define TAU (PI*2.0)
 float hash11(float seed)
 {
     return fract(sin(seed*123.456)*123.456);
@@ -672,7 +819,17 @@ float _cube(vec3 p, vec3 s)
   vec3 l = abs(p)-s;
   return max(l.x, max(l.y, l.z));
 }
+float _cucube(vec3 p, vec3 s, vec3 th)
+{
+    vec3 l = abs(p)-s;
+    float cube = max(max(l.x, l.y), l.z);
+    l = abs(l)-th;
+    float x = max(l.y, l.z);
+    float y = max(l.x, l.z);
+    float z = max(l.x, l.y);
 
+    return max(min(min(x, y), z), cube);
+}
 float _seed;
 
 float rand()
@@ -689,16 +846,36 @@ vec3 getCam(vec3 rd, vec2 uv)
     vec3 u = normalize(cross(rd, r));
     return normalize(rd+r*uv.x+u*uv.y);
 }
+
+float lenny(vec2 v)
+{
+    return abs(v.x)+abs(v.y);
+}
 float _sqr(vec2 p, vec2 s)
 {
     vec2 l = abs(p)-s;
     return max(l.x, l.y);
+}
+float _cir(vec2 uv, float sz)
+{
+  return length(uv)-sz;
+}
+
+float _loz(vec2 uv,float sz)
+{
+  return lenny(uv)-sz;
 }
 vec2 _min(vec2 a, vec2 b)
 {
     if (a.x < b.x)
         return a;
     return b;
+}
+vec2 _max(vec2 a, vec2 b)
+{
+  if (a.x > b.x)
+      return a;
+  return b;
 }
 
 // To replace missing behavior in veda
@@ -708,6 +885,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 
@@ -824,11 +1002,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
   fragColor = vec4(col, 1.0);
 }*/
 
+
 // Fork of "tunnelzefzef" by z0rg. https://shadertoy.com/view/stV3zt
 // 2021-12-11 16:08:54
 
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
+
+precision highp float;
 
 uniform float time;
 uniform vec2 resolution;
@@ -841,7 +1022,8 @@ uniform sampler2D greyNoise;
 #define sat(a) clamp(a, 0., 1.)
 #define FFT(a) texture2D(spectrum, vec2(a, 0.)).x
 
-
+#define EPS vec2(0.01, 0.)
+#define AKAI_KNOB(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
 
 #define MIDI_KNOB(a) (texture2D(midi, vec2(176. / 256., (16.+min(max(float(a), 0.), 7.)) / 128.)).x)
 #define MIDI_FADER(a) (texture2D(midi, vec2(176. / 256., (0.+min(max(float(a), 0.), 7.)) / 128.)).x)
@@ -854,6 +1036,7 @@ uniform sampler2D greyNoise;
 #define FFTmid (FFT(0.5) * MIDI_KNOB(1))
 #define FFThigh (FFT(0.7) * MIDI_KNOB(2))
 #define PI 3.14159265
+#define TAU (PI*2.0)
 float hash11(float seed)
 {
     return fract(sin(seed*123.456)*123.456);
@@ -864,7 +1047,17 @@ float _cube(vec3 p, vec3 s)
   vec3 l = abs(p)-s;
   return max(l.x, max(l.y, l.z));
 }
+float _cucube(vec3 p, vec3 s, vec3 th)
+{
+    vec3 l = abs(p)-s;
+    float cube = max(max(l.x, l.y), l.z);
+    l = abs(l)-th;
+    float x = max(l.y, l.z);
+    float y = max(l.x, l.z);
+    float z = max(l.x, l.y);
 
+    return max(min(min(x, y), z), cube);
+}
 float _seed;
 
 float rand()
@@ -881,16 +1074,36 @@ vec3 getCam(vec3 rd, vec2 uv)
     vec3 u = normalize(cross(rd, r));
     return normalize(rd+r*uv.x+u*uv.y);
 }
+
+float lenny(vec2 v)
+{
+    return abs(v.x)+abs(v.y);
+}
 float _sqr(vec2 p, vec2 s)
 {
     vec2 l = abs(p)-s;
     return max(l.x, l.y);
+}
+float _cir(vec2 uv, float sz)
+{
+  return length(uv)-sz;
+}
+
+float _loz(vec2 uv,float sz)
+{
+  return lenny(uv)-sz;
 }
 vec2 _min(vec2 a, vec2 b)
 {
     if (a.x < b.x)
         return a;
     return b;
+}
+vec2 _max(vec2 a, vec2 b)
+{
+  if (a.x > b.x)
+      return a;
+  return b;
 }
 
 // To replace missing behavior in veda
@@ -900,6 +1113,7 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
 
 
 vec2 maptunnelbars(vec3 p)
@@ -1002,6 +1216,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
 }*/
 
 
+
 void main() {
     vec2 uv = (gl_FragCoord.xy-.5*resolution.xy) / resolution.xx;
     _seed = texture2D(greyNoise, gl_FragCoord.xy/resolution.xy).x+time;
@@ -1011,7 +1226,7 @@ void main() {
 
     //col = vec3(1.,0.,0.)*pow(FFT(uv.x),1.);
     if (MIDI_FADER(0) > 0.01)
-      col += MIDI_FADER(0)*rdrDarkRoom(uv)*2.;
+      col += MIDI_FADER(0)*rdrDarkRoom(uv)*3.;
     if (MIDI_FADER(1) > 0.01)
       col += MIDI_FADER(1)*rdrmack(uv)*2.;
     if (MIDI_FADER(2) > 0.01)
@@ -1026,3 +1241,4 @@ void main() {
 
     gl_FragColor = vec4(col, 1.0);
 }
+
