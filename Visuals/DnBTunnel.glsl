@@ -78,7 +78,7 @@ vec3 tracednbtunnel(vec3 ro, vec3 rd, int steps)
     accCol0 = vec3(0.);
     accCol1 = vec3(0.);
     vec3 p = ro;
-    for (int i = 0; i < 256; ++i)
+    for (int i = 0; i < 128; ++i)
     {
         vec2 res = mapdnbtunnel(p);
         if (res.x < 0.01)
@@ -87,14 +87,16 @@ vec3 tracednbtunnel(vec3 ro, vec3 rd, int steps)
             accCol0 += vec3(sin(p.z)*.5+.5, .2, cos(p.z*3.+p.y*5.+_time*7.)*.2+.5)*(1.-sat(res.x/.3))*.2;
         if (res.y == 1.)
             accCol1 +=  vec3(0.200,0.643,0.980)*(1.-sat(res.x/.05))*.1;
-        p+= rd*res.x*.75;
+            if (distance(p, ro) > 60.)
+            break;
+        p+= rd*res.x*.9;
     }
     return vec3(-1.);
 }
 
 vec3 rdrdnbtunnel(vec2 uv)
 {
-      _time = time+textureRepeat(greyNoise, uv).x*.5*(1.-sat(length(uv*3.)));
+      _time = mtime+textureRepeat(greyNoise, uv).x*.5*(1.-sat(length(uv*3.)));
     vec3 col = mix(vec3(1.000,0.439,0.302)*2.2, vec3(0.075,0.027,0.110), sat(length(uv*2.5)));
 
     vec3 ro = vec3(0., 0.,-5.);

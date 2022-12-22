@@ -3,10 +3,16 @@
     "greyNoise": {
       "PATH": "./Textures/GreyNoise.jpg",
     },
+    "lolTex": {
+      "PATH": "./Textures/received_419901153575683.jpeg"
+    },
+    "cookieTex": {
+      "PATH": "./Textures/Cookie.jpg"
+    }
   },
 
   "vertexMode": "LINES",
-  "pixelRatio": 1,
+  "pixelRatio": 1.5,
   "audio": true,
   "midi": true,
 }

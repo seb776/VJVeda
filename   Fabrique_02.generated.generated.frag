@@ -1,3 +1,6 @@
+/*{ "camera": true }*/
+uniform sampler2D camera;
+
 #ifndef TOOLS_INCLUDE
 #define TOOLS_INCLUDE
 
@@ -108,3 +111,92 @@ vec4 textureRepeat(sampler2D sampler, vec2 uv)
 }
 
 #endif // !TOOLS_INCLUDE
+
+
+
+vec2 map(vec3 p)
+{
+    vec2 acc = vec2(10000., -1.);
+
+
+    float gnd = -p.y+2.;
+    acc = _min(acc, vec2(gnd, 1.));
+    acc = _min(acc, vec2(length(p)-1., 0.));
+
+    float ceili = p.y+2.;
+    acc = _min(acc, vec2(ceili, 1.));
+
+    return acc;
+}
+
+
+vec3 accCol;
+vec3 trace(vec3 ro, vec3 rd)
+{
+    accCol = vec3(0.);
+    vec3 p = ro;
+    for (int i = 0; i < 128; ++i)
+    {
+        vec2 res = map(p);
+        if (res.x < 0.01)
+            return vec3(res.x, distance(p, ro), res.y);
+        p+= rd*res.x;
+    }
+    return vec3(-1.);
+}
+
+vec3 getNorm(vec3 p, float d)
+{
+  vec2 e = vec2(0.01, 0.);
+  return  normalize(vec3(d) - vec3(map(p-e.xyy).x, map(p-e.yxy).x, map(p-e.yyx).x));
+}
+vec3 getMat(vec3 p, vec3 n, vec3 rd, vec3 res)
+{
+  vec3 col = n*.5+.5;
+  if (res.z == 1.)
+  {
+    col = vec3(.1);
+    vec2 uvp = p.xz;
+    vec2 rep = vec2(1.);
+    uvp = mod(uvp+rep*.5,rep)-rep*.5;
+    float dott = length(uvp)-.1;
+    col = mix(vec3(0.), vec3(1.,.2,.1), 1.-sat(dott*400.));
+  }
+  return col;
+}
+vec3 rdr(vec2 uv)
+{
+    vec3 ro = vec3(0., 0., -5.);
+    vec3 ta = vec3(0.,0.,0.);
+    vec3 rd = normalize(ta-ro);
+    rd = getCam(rd, uv);
+    vec3 col = vec3(0.);
+
+    vec3 res = trace(ro, rd);
+    if (res.y > 0.)
+    {
+        vec3 p = ro + rd*res.y;
+        vec3 n = getNorm(p, res.x);
+        col = getMat(p, n, rd, res);
+        vec3 refl = normalize(reflect(rd, n)+(vec3(rand(), rand(), rand())-.5)*.1);
+        vec3 resrefl = trace(p+n*.01, refl);
+        if (resrefl.y > 0.)
+        {
+          vec3 prefl = p+refl*resrefl.y;
+          vec3 nrefl = getNorm(prefl, resrefl.x);
+          col += getMat(prefl, nrefl, refl, resrefl);
+        }
+    }
+
+    return col;
+}
+void main() {
+    vec2 uv = (gl_FragCoord.xy-.5*resolution.xy) / resolution.xx;
+    _seed = time+textureRepeat(greyNoise, uv).x;
+   vec3 col = rdr(uv);
+   col += rdr(uv+(vec2(rand(), rand())-.5)*.1);
+   //col = texture2D(camera, uv*10.).xyz;
+//vec3 col = vec3(0.,0.,.5);
+    gl_FragColor = vec4(col, 1.0);
+}
+

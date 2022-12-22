@@ -28,7 +28,7 @@ vec2 maptunneldnb(vec3 p)
   vec2 acc = vec2(1000.,-1.);
   float rep = 2.5;
   p= mod(p+rep*.5,rep)-rep*.5;
-  //p.xy*=r2d(time+p.z);
+  //p.xy*=r2d(mtime+p.z);
   acc = vec2(_bbox(p,vec3(1.),vec3(.2)),0.);
 
   return acc;
@@ -74,9 +74,9 @@ vec3 rdrtunneldnb(vec2 uv)
 {
   vec3 col;
 
-  float z = mod(time,18.);
-  vec3 ro = vec3(0.,0.,-5.+time);
-  vec3 ta = vec3(0.,0.,0.+time);
+  float z = mod(mtime,18.);
+  vec3 ro = vec3(0.,0.,-5.+mtime);
+  vec3 ta = vec3(0.,0.,0.+mtime);
   vec3 rd = normalize(ta-ro);
 
   rd = getCamtunneldnb(rd,uv);
@@ -109,7 +109,7 @@ vec3 rdrtunneldnb(vec2 uv)
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
   vec2 uv = (fragCoord.xy-vec2(.5)*iResolution.xy) / iResolution.xx;
   seed=texture(iChannel0,uv).x;
-  seed+=fract(time);
+  seed+=fract(mtime);
     uv *= r2d(PI*.5);
   vec3 col = rdr(uv);
   col = pow(col, vec3(2.));

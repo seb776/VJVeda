@@ -9,9 +9,9 @@ vec2 mapmackjamtunnel(vec3 p)
   acc = _min(acc, vec2(length(p+vec3(0.,0.,-15.))-1., 0.));
 
   p.xz *= r2d(.5*sin(.1*p.y));
-  p.xz += vec2(sin(time), cos(time*5.1+p.y*.1))*1.;
+  p.xz += vec2(sin(mtime), cos(mtime*5.1+p.y*.1))*1.;
   float rad = 20.;
-  vec3 pdart = p+vec3(0.,FFTI(.05)*20.+time*85.,0.);
+  vec3 pdart = p+vec3(0.,FFTI(.05)*20.+mtime*85.,0.);
   float adart = atan(pdart.z, pdart.x);
   float stpdart = PI*2./10.;
   float sector = mod(adart+stpdart*.5,stpdart)-stpdart*.5;
@@ -42,8 +42,8 @@ vec2 mapmackjamtunnel(vec3 p)
   acc = _min(acc, vec2(tunnel, 0.));
 
   vec3 pcc = op-vec3(0.,55.,0.);
-  pcc.xz *= r2d(time);
-  pcc.yz *= r2d(.5*time);
+  pcc.xz *= r2d(mtime);
+  pcc.yz *= r2d(.5*mtime);
   acc = _min(acc, vec2(_cucube(pcc-vec3(0.,15.,0.), vec3(1.), vec3(.01)), -5.));
 
   return acc;
@@ -67,7 +67,7 @@ vec3 tracemackjamtunnel(vec3 ro, vec3 rd, int steps)
     if (res.x < 0.01)
       return vec3(res.x, distance(p, ro), res.y);
     if (res.y < 0.)
-      accLightmackjamtunnel += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+time)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2*sat(sin(p.y*.05+5.*time));
+      accLightmackjamtunnel += (vec3(172, 38, 235)/255.)*0.1+vec3(sin(distance(p, ro)*1.+mtime)*.5+.5, .5, .1)*(1.-sat(res.x/5.5))*.2*sat(sin(p.y*.05+5.*mtime));
 
     p+=rd*res.x*.5;
   }
@@ -80,7 +80,7 @@ vec3 rdrmackjamtunnel2(vec2 uv)
   vec3 col = background;
 
   vec3 ro = vec3(0.,-5.,-5.);
-  vec3 ta = vec3(sin(time)*5.,85.,0.);
+  vec3 ta = vec3(sin(mtime)*5.,85.,0.);
   vec3 rd = normalize(ta-ro);
 
   rd = getCam(rd, uv);
@@ -104,10 +104,10 @@ vec3 rdrmackjamtunnel2(vec2 uv)
 vec3 rdrmackjamtunnel(vec2 uv)
 {
 
-    //uv *= r2d(-time*.5);
+    //uv *= r2d(-mtime*.5);
     //uv = abs(uv);
     //uv -= vec2(.2+uv.y, 0.);
-    //uv *= r2d(.1*time);
+    //uv *= r2d(.1*mtime);
     //uv = abs(uv);
    float stp = .01*length(uv);
     //uv = floor(uv/stp)*stp;
@@ -123,9 +123,9 @@ vec3 rdrmackjamtunnel(vec2 uv)
     col = pow(col, vec3(1.45));
     //col *= vec3(199, 242, 58)/255.;
     float beat = 1./8.;
-    col += (mod(time, beat)/beat)*sat(FFT(.1)*col)*45.;
-    col = mix(col, textureRepeat(greyNoise, uv).xyz, .5);
-    col.xy *= r2d(time*.5);
+    col += (mod(mtime, beat)/beat)*sat(FFT(.1)*col)*45.;
+    //col = mix(col, textureRepeat(greyNoise, uv).xyz, .5);
+    col.xy *= r2d(mtime*.5);
     col = abs(col);
     return col;
 }
@@ -134,10 +134,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	vec2 uv = (fragCoord.xy-.5*iResolution.xy)/iResolution.xx;
 
-  //uv *= r2d(-time*.5);
+  //uv *= r2d(-mtime*.5);
   //uv = abs(uv);
   //uv -= vec2(.2+uv.y, 0.);
-  //uv *= r2d(.1*time);
+  //uv *= r2d(.1*mtime);
   //uv = abs(uv);
  float stp = .01*length(uv);
   //uv = floor(uv/stp)*stp;
@@ -153,9 +153,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
   col = pow(col, vec3(1.45));
   //col *= vec3(199, 242, 58)/255.;
   float beat = 1./8.;
-  col += (mod(time, beat)/beat)*sat(FFTS(.1)*col)*45.;
+  col += (mod(mtime, beat)/beat)*sat(FFTS(.1)*col)*45.;
   col = mix(col, texture(iChannel0, gl_FragCoord.xy/iResolution.xy).xyz, .5);
-  col.xy *= r2d(time*.5);
+  col.xy *= r2d(mtime*.5);
   col = abs(col);
 	fragColor = vec4(col, 1.);
 }
