@@ -121,7 +121,7 @@ vec2 map(vec3 p)
 
     float gnd = -p.y+2.;
     acc = _min(acc, vec2(gnd, 1.));
-    acc = _min(acc, vec2(length(p)-1., 0.));
+    acc = _min(acc, vec2(length(p-vec3(0.,0.,sin(time)+15.))-1., 0.));
 
     float ceili = p.y+2.;
     acc = _min(acc, vec2(ceili, 1.));
@@ -156,11 +156,13 @@ vec3 getMat(vec3 p, vec3 n, vec3 rd, vec3 res)
   if (res.z == 1.)
   {
     col = vec3(.1);
-    vec2 uvp = p.xz;
+    vec2 uvp = p.xz+vec2(0.,time*5.);
     vec2 rep = vec2(1.);
     uvp = mod(uvp+rep*.5,rep)-rep*.5;
     float dott = length(uvp)-.1;
-    col = mix(vec3(0.), vec3(1.,.2,.1), 1.-sat(dott*400.));
+    vec3 rgb = vec3(1.,.2,.1);
+//    rgb = mix(rgb, vec3(1.), sin())
+    col = mix(vec3(0.), rgb, 1.-sat(dott*400.));
   }
   return col;
 }
@@ -178,7 +180,7 @@ vec3 rdr(vec2 uv)
         vec3 p = ro + rd*res.y;
         vec3 n = getNorm(p, res.x);
         col = getMat(p, n, rd, res);
-        vec3 refl = normalize(reflect(rd, n)+(vec3(rand(), rand(), rand())-.5)*.1);
+        vec3 refl = normalize(reflect(rd, n)+(vec3(rand(), rand(), rand())-.5)*.01);
         vec3 resrefl = trace(p+n*.01, refl);
         if (resrefl.y > 0.)
         {
@@ -194,9 +196,8 @@ void main() {
     vec2 uv = (gl_FragCoord.xy-.5*resolution.xy) / resolution.xx;
     _seed = time+textureRepeat(greyNoise, uv).x;
    vec3 col = rdr(uv);
-   col += rdr(uv+(vec2(rand(), rand())-.5)*.1);
+   col += rdr(uv+(vec2(rand(), rand())-.5)*.02);
    //col = texture2D(camera, uv*10.).xyz;
 //vec3 col = vec3(0.,0.,.5);
     gl_FragColor = vec4(col, 1.0);
 }
-
