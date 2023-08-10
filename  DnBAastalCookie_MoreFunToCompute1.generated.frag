@@ -1183,7 +1183,7 @@ float _sqrrandsheet(vec2 p, vec2 s)
     l = abs(l)-p;
     return mix(max(l.x, l.y), length(l), s.x*5.*(beat < 1. ? -1. : 1.));
 }
-
+#define FFTrand(a) (FFT(fract(a*.1))*10.)
 vec3 rdr(vec2 uv)
 {
     float shp = 400.*(1.-FFT(10));
@@ -1191,8 +1191,8 @@ vec3 rdr(vec2 uv)
 
     for (float i = 0.; i < 40.; ++i)
     {
-        vec2 p = vec2(sin(time*.5+FFT(150)), cos(time))*.1;
-        float shape = abs(_sqrrandsheet(p+uv*r2d((i+.1)*.05*time+pow(FFT(i*10.),.25)), vec2(.5/(sin(i+time)+.01*i*i+1.))))-0.001;
+        vec2 p = vec2(sin(time*.5+FFTrand(150.)), cos(time))*.1;
+        float shape = abs(_sqrrandsheet(p+uv*r2d((i+.1)*.05*time+pow(FFTrand(i*10.),.25)), vec2(.5/(sin(i+time)+.01*i*i+1.))))-0.001;
         vec3 rgb = mix(vec3(1.000,0.882,0.561), vec3(0.302,1.000,0.545), 1.-sat(i/20.));
         col = mix(col, col+rgb, 1.-sat(shape*shp*pow(sat(i/20.+.1),1.25)));
 
