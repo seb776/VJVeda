@@ -9,6 +9,14 @@
     "cookieTex": {
       "PATH": "./Textures/Cookie.jpg"
     }
+    ,
+    "aastalTex": {
+      "PATH": "./Textures/aastal.jpg"
+    }
+    ,
+    "z0rgTex": {
+      "PATH": "./Textures/z0rg.png"
+    }
   },
 
   "vertexMode": "LINES",
