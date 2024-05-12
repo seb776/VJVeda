@@ -16,6 +16,18 @@
     ,
     "z0rgTex": {
       "PATH": "./Textures/z0rg.png"
+    },
+    "circuitTex": {
+      "PATH": "./Textures/circuit.jpg"
+    },
+    "pixelDance": {
+      "PATH": "./Textures/PixelDance.mp4"
+    },
+    "catEnergy": {
+      "PATH": "./Textures/CatEnergy.mp4"
+    },
+    "aliG": {
+      "PATH": "./Textures/AliG.mp4"
     }
   },
 
