@@ -29,10 +29,28 @@
     "aliG": {
       "PATH": "./Textures/AliG.mp4"
     }
+
+    ,
+    "cyanideTex": {
+      "PATH": "./Textures/Cyanide.png"
+    }
+    ,
+    "aerobic": {
+      "PATH": "./Textures/Aerobic.mp4"
+    }
+    ,
+    "seals": {
+      "PATH": "./Textures/seals-flopping.mp4"
+    }
+    ,
+    "terrible": {
+      "PATH": "./Textures/EVERYTHING_IS_TERRIBLE!.mp4"
+    }
   },
 
   "vertexMode": "LINES",
   "pixelRatio": 1.5,
+  "camera": true,
   "audio": true,
   "midi": true,
 }
